@@ -1,0 +1,104 @@
+
+
+        <app-default-page-layout 
+          title="Projetos" 
+          [pageForm]="projectForm" path="project" 
+          (setList)="setList($event)" 
+          [disableSaveBtn]="!projectForm.valid"
+        >
+     
+             <section form-page-body>
+            
+                <form [formGroup]="projectForm" class="ng-untouched ng-pristine ng-valid">
+                    {{projectForm.value.id_client?.id}}
+                    <div class="row">
+                        <!-- campos do formulario-->
+                        <mat-form-field appearance="outline" class="col-md-6 pr-1">
+                            <mat-label>Início</mat-label>
+                            <input formControlName="start_date"  matInput placeholder="">
+                            <mat-icon matSuffix>person_pin</mat-icon>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="col-md-6 pr-1">
+                            <mat-label>Fim</mat-label>
+                            <input formControlName="end_date"  matInput placeholder="">
+                            <mat-icon matSuffix>person_pin</mat-icon>
+                        </mat-form-field>
+
+                    </div>
+
+                    <div class="row">
+                        <!-- campos do formulario-->
+                        <mat-form-field appearance="outline" class="col-md-6 pr-1">
+                            <mat-label>Nome</mat-label>
+                            <input formControlName="name"  matInput placeholder="">
+                            <mat-icon matSuffix>person_pin</mat-icon>
+                        </mat-form-field>
+                        <!--formControlName="id_client"-->
+                        
+                        <mat-form-field appearance="outline"  class="col-md-6 pr-1">
+                          <mat-label>Cliente</mat-label>
+                          <input type="text"
+                                 placeholder="Selecione um cliente"
+                                 aria-label="Cliente"
+                                 matInput
+                                 [formControl]="clientControl"
+                                 [matAutocomplete]="auto">
+
+                          <mat-autocomplete  #auto="matAutocomplete" (optionSelected)='setIdClient($event.option.value)' [displayWith]="displayFn">
+                            @for (option of filteredOptions | async; track option) {
+                              <mat-option [value]="option">{{option.name}}</mat-option>
+                            }
+                          </mat-autocomplete>
+
+                        </mat-form-field>
+
+                    </div>
+
+                    <div class="row">
+                       
+                        <mat-form-field appearance="outline" class="col-md-12 pr-1">
+                            <mat-label>Descrição</mat-label>
+                            <textarea formControlName="description"  matInput placeholder=""></textarea>
+                            <mat-icon matSuffix>person_pin</mat-icon>
+                        </mat-form-field>
+                        
+                    </div>
+                </form>
+
+             </section>
+
+
+             <section page-list-body>
+            
+                <table class="table table-striped table-sm">
+                    <thead>
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Descrição</th>
+                        <th scope="col">Início</th>
+                        <th scope="col">Final</th>
+                        <th scope="col">Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let list of projectList">
+                        <td>{{ list.id }}</td>
+                        <td>{{ list.name }}</td>
+                        <td>{{ list.client.name }}</td>
+                        <td>{{ list.description }}</td>
+                        <td>{{ list.start_date | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                        <td>{{ list.end_date | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                        <td>
+                            <input type="button" (click)="edit(list.id)"    class="btn btn-outline-primary" value="editar">
+                            <input type="button" (click)="delete(list.id)"  class="btn btn-outline-danger"  value="excluir">
+                        </td> 
+                      </tr>
+                    </tbody>
+                  </table>
+             </section>
+
+        </app-default-page-layout>
+  

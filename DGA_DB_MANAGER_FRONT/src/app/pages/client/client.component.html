@@ -1,0 +1,92 @@
+<app-default-page-layout 
+title="Clientes" 
+[pageForm]="clientForm" path="client" 
+(setList)="setList($event)" 
+[disableSaveBtn]="!clientForm.valid"
+>
+                   
+    <section form-page-body>
+
+        <form [formGroup]="clientForm" class="ng-untouched ng-pristine ng-valid">
+            
+            <div class="row">
+
+                <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                    <mat-label>Nome</mat-label>
+                    <input formControlName="name"  matInput placeholder="">
+                    <mat-icon matSuffix>person_pin</mat-icon>
+                </mat-form-field>
+                
+                <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                    <mat-label>Responsável</mat-label>
+                    <input formControlName="responsable"  matInput placeholder="">
+                    <mat-icon matSuffix>person_pin</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                    <mat-label>Telefone</mat-label>
+                    <input formControlName="telephone"  matInput placeholder="">
+                    <mat-icon matSuffix>contact_phone</mat-icon>
+                </mat-form-field>
+
+                
+            </div>
+            
+            <div class="row pt-2">
+
+                <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                    <mat-label>Pool horas</mat-label>
+                    <input formControlName="hours"  matInput placeholder="Placeholder">
+                    <mat-icon matSuffix>av_timer</mat-icon>
+                </mat-form-field>
+
+                <!-- <div class="col-md-4 pr-1">
+                    <div class="form-group">
+                        <label>Pool horas</label>
+                        <input formControlName="hours" class="form-control" placeholder="" type="text" >
+                    </div>
+                </div> -->
+            
+            </div>
+            
+          
+
+        </form>
+
+    </section>
+
+    <section page-list-body>
+
+        <table class="table table-striped table-sm">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Responsavel</th>
+                <th scope="col">Telefone responsável</th>
+                <th scope="col">Pool horas</th>
+                <th scope="col">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let client of clientList">
+                <td>{{ client.id }}</td>
+                <td>{{ client.name }}</td>
+                <td>{{ client.responsable }}</td>
+                <td>{{ client.telephone }}</td>
+                <td>{{ client.hours }}</td>
+                <td>
+                    <input type="button" (click)="edit(client.id)"    class="btn btn-outline-primary" value="editar">
+                    <input type="button" (click)="delete(client.id)"  class="btn btn-outline-danger"  value="excluir">
+                </td> 
+              </tr>
+            </tbody>
+        </table>
+
+
+     </section>
+  
+
+
+</app-default-page-layout>
+

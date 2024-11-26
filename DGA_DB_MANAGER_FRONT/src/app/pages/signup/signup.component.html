@@ -1,0 +1,28 @@
+<app-default-login-layout title="Criar conta" 
+primaryButtonText="Enviar registro"
+secondaryButtonText="Login" 
+(submit)="submit()" 
+(navigate)="navigate()"
+[disablePrimaryBtn]="!signupForm.valid">
+
+    <form [formGroup]="signupForm">
+
+        <app-input-general formControlName="name" inputName="name" type="text" label="Nome" placeholder="informe seu nome" >
+            <img src="assets/img/email-icon.svg" />
+        </app-input-general>
+
+        <app-input-general formControlName="email" inputName="email" type="email" label="Email" placeholder="seu@email.com" >
+            <img src="assets/img/email-icon.svg" />
+        </app-input-general>
+
+        <app-input-general formControlName="password" inputName="password" type="password" label="Senha" placeholder="">
+            <img src="assets/img/password-icon.svg" />
+        </app-input-general>
+
+        <app-input-general formControlName="passwordConfirm" inputName="passwordConfirm" type="password" label="Confirmar senha" placeholder="">
+            <img src="assets/img/password-icon.svg" />
+        </app-input-general>
+
+    </form>
+
+</app-default-login-layout>

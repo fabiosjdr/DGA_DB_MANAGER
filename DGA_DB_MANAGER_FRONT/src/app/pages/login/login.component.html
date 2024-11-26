@@ -1,0 +1,21 @@
+<app-default-login-layout title="Logar na sua conta" 
+primaryButtonText="Entrar"
+secondaryButtonText="Registrar" 
+(submit)="submit()" 
+(navigate)="navigate()"
+[disablePrimaryBtn]="!loginForm.valid">
+
+    <form [formGroup]="loginForm">
+
+        <app-input-general formControlName="email" inputName="email" type="email" label="Email" placeholder="seu@email.com" >
+            <img src="assets/img/email-icon.svg" />
+        </app-input-general>
+
+        <app-input-general formControlName="password" inputName="password" type="password" label="Senha" placeholder="">
+            <img src="assets/img/password-icon.svg" />
+        </app-input-general>
+
+        <span>Esqueci minha senha</span>
+    </form>
+
+</app-default-login-layout>

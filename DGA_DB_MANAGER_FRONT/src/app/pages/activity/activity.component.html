@@ -1,0 +1,174 @@
+<app-default-page-layout 
+title="Atividades" 
+[pageForm]="activityForm" 
+path="activity" 
+(setList)="setList($event)" 
+[disableSaveBtn]="!activityForm.valid"
+>
+   <section form-page-body>
+      <form [formGroup]="activityForm" class="ng-untouched ng-pristine ng-valid">
+
+          <div class="row" >
+
+              <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                 
+                  <mat-form-field appearance="outline" class="me-1">
+                    <mat-label>Início</mat-label>
+                    <input id="start_date" matInput (dateChange)="validateDate($event,'date','start_date')" [matDatepicker]="pickerStart" mask="00/00/0000"  placeholder="00/00/0000">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerStart></mat-datepicker>
+                  </mat-form-field>
+            
+                  <mat-form-field appearance="outline">
+                    <mat-label>Hora Início</mat-label>
+                    <input [formControl]="startHourControl" (change)="validateDate($event,'hour','start_date')" matInput placeholder="00:00" mask="00:00" >
+                  </mat-form-field>
+                 
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                 
+                  <mat-form-field appearance="outline" class="me-1">
+                    <mat-label>Fim</mat-label>
+                    <input matInput (dateChange)="validateDate($event,'date','end_date')" [matDatepicker]="pickerEnd"  mask="00/00/0000"  placeholder="00/00/0000">
+                    <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                    <mat-datepicker #pickerEnd></mat-datepicker>
+                  </mat-form-field>
+            
+                  <mat-form-field appearance="outline">
+                    <mat-label>Hora Fim</mat-label>
+                    <input [formControl]="endHourControl" (change)="validateDate($event,'hour','end_date')" matInput placeholder="" placeholder="00:00" mask="00:00">
+                  </mat-form-field>
+                </div>
+              </div>
+  
+               <!--Status-->
+               <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                <mat-label>Status</mat-label>
+                <input type="text"
+                       placeholder="Selecione um status"
+                       aria-label="Status"
+                       matInput
+                       [formControl]="statusControl"
+                       [matAutocomplete]="autoStatus">
+
+                <mat-autocomplete  #autoStatus="matAutocomplete" (optionSelected)='autoFnStatus.setValue($event.option.value)' [displayWith]="autoFnStatus.displayFn">
+                  @for (optionStatus of filteredOptionsStatus | async; track optionStatus) {
+                    <mat-option [value]="optionStatus">{{optionStatus.name}}</mat-option>
+                  }
+                </mat-autocomplete>
+
+              </mat-form-field>
+
+          </div>
+
+          <div class="row">
+
+              <!--Projeto-->
+              <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                <mat-label>Projeto</mat-label>
+                <input type="text"
+                       placeholder="Selecione um projeto"
+                       aria-label="Projeto"
+                       matInput
+                       [formControl]="projectControl"
+                       [matAutocomplete]="autoProject">
+
+                <mat-autocomplete  #autoProject="matAutocomplete" (optionSelected)='autoFnProject.setValue($event.option.value)' [displayWith]="autoFnProject.displayFn">
+                  @for (optionProject of filteredOptionsProject | async; track optionProject) {
+                    <mat-option [value]="optionProject">{{optionProject.name}}</mat-option>
+                  }
+                </mat-autocomplete>
+
+              </mat-form-field>
+              
+              <!--categoria-->
+              <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                <mat-label>Categoria</mat-label>
+                <input type="text"
+                       placeholder="Selecione uma categoria"
+                       aria-label="Categoria"
+                       matInput
+                       [formControl]="categoryControl"
+                       [matAutocomplete]="autoClient">
+
+                <mat-autocomplete  #autoClient="matAutocomplete" (optionSelected)='autoFnCategory.setValue($event.option.value)' [displayWith]="autoFnCategory.displayFn">
+                  @for (optionCategory of filteredOptionsCategory | async; track optionCategory) {
+                    <mat-option [value]="optionCategory">{{optionCategory.name}}</mat-option>
+                  }
+                </mat-autocomplete>
+
+              </mat-form-field>
+
+              <!--cliente-->
+              <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                <mat-label>Cliente</mat-label>
+                <input type="text"
+                       placeholder="Selecione um cliente"
+                       aria-label="Cliente"
+                       matInput
+                       [formControl]="clientControl"
+                       [matAutocomplete]="autoCategory">
+
+                <mat-autocomplete  #autoCategory="matAutocomplete" (optionSelected)='autoFnClient.setValue($event.option.value)' [displayWith]="autoFnClient.displayFn">
+                  @for (option of filteredOptionsClient | async; track option) {
+                    <mat-option [value]="option">{{option.name}}</mat-option>
+                  }
+                </mat-autocomplete>
+
+              </mat-form-field>
+
+          </div>
+
+          <div class="row">
+              <mat-form-field appearance="outline" class="col-md-12 pr-1">
+                  <mat-label>Atividade</mat-label>
+                  <textarea formControlName="activity"  matInput placeholder=""></textarea>
+                  <mat-icon matSuffix>person_pin</mat-icon>
+              </mat-form-field>
+          </div>
+
+      </form>
+
+   </section>
+
+
+   <section page-list-body>
+
+      <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Atividade</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Projeto</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Status</th>
+              <th scope="col">Início</th>
+              <th scope="col">Final</th>
+              <th scope="col">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let list of activityList">
+              <td>{{ list.id }}</td>
+              <td>{{ list.activity }}</td>
+              <td>{{ list.client.name }}</td>
+              <td>{{ list.project.name }}</td>
+              <td>{{ list.category.name }}</td>
+              <td>{{ list.status.name }}</td>
+              <td>{{ list.start_date }}</td>
+              <td>{{ list.end_date }}</td>
+              <td>
+                  <input type="button" (click)="edit(list.id)"    class="btn btn-outline-primary" value="editar">
+                  <input type="button" (click)="delete(list.id)"  class="btn btn-outline-danger"  value="excluir">
+              </td> 
+            </tr>
+          </tbody>
+        </table>
+   </section>
+
+</app-default-page-layout>

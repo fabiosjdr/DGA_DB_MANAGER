@@ -1,0 +1,54 @@
+<app-default-page-layout 
+title="Status" 
+[pageForm]="statusForm" path="status" 
+(setList)="setList($event)" 
+[disableSaveBtn]="!statusForm.valid"
+>
+                   
+    <section form-page-body>
+
+        <form [formGroup]="statusForm" class="ng-untouched ng-pristine ng-valid">
+            
+            <div class="row">
+
+                <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                    <mat-label>Nome</mat-label>
+                    <input formControlName="name"  matInput placeholder="">
+                    <mat-icon matSuffix>person_pin</mat-icon>
+                </mat-form-field>
+                
+            </div>
+            
+        </form>
+
+    </section>
+
+    <section page-list-body>
+
+        <table class="table table-striped table-sm">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let client of statusList">
+                <td>{{ client.id }}</td>
+                <td>{{ client.name }}</td>
+                <td>
+                    <input type="button" (click)="edit(client.id)"    class="btn btn-outline-primary" value="editar">
+                    <input type="button" (click)="delete(client.id)"  class="btn btn-outline-danger"  value="excluir">
+                </td> 
+              </tr>
+            </tbody>
+        </table>
+
+
+     </section>
+  
+
+
+</app-default-page-layout>
+
