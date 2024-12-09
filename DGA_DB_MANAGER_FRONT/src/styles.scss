@@ -18,3 +18,8 @@ html, body{
 }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+#watermark{
+    display: none !important; //remove a propagando do plugin
+}
+

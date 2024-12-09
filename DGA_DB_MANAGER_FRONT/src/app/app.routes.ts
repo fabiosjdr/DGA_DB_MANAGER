@@ -8,6 +8,9 @@ import { ProjectComponent } from './pages/project/project.component';
 import { ActivityComponent } from './pages/activity/activity.component';
 import { CategoryComponent } from './pages/category/category.component';
 import { StatusComponent } from './pages/status/status.component';
+import { KanbanComponent } from './pages/kanban/kanban.component';
+import { UsersComponent } from './pages/users/users.component';
+import { MeComponent } from './pages/me/me.component';
 
 export const routes: Routes = [
     {
@@ -15,6 +18,7 @@ export const routes: Routes = [
         pathMatch: 'full',
         redirectTo: 'activity',
     },
+    
     {
         path: "login",
         component: LoginComponent
@@ -26,6 +30,16 @@ export const routes: Routes = [
     {
         path: "dashboard",
         component: DashboardComponent,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: "users",
+        component: UsersComponent,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: "me",
+        component: MeComponent,
         canActivate: [AuthGuard]
     },
     {
@@ -41,7 +55,14 @@ export const routes: Routes = [
     {
         path: "activity",
         component: ActivityComponent,
-        canActivate: [AuthGuard]
+        canActivate: [AuthGuard],
+        
+    },
+    {
+        path: "kanban/:id",
+        component: KanbanComponent,
+        canActivate: [AuthGuard],
+        
     },
     {
         path: "category",

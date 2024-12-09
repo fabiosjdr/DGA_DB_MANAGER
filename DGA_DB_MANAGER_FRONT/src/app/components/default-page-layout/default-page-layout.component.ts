@@ -7,6 +7,7 @@ import { DefaultPageService } from '../../services/default-page.service';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { CommonModule } from '@angular/common';
 
 interface PageSearchForm {
   search : FormControl,
@@ -19,7 +20,8 @@ interface PageSearchForm {
   imports: [
     ContainerGeneralComponent,
     ReactiveFormsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    CommonModule
   ],
   providers: [DefaultPageService],
   templateUrl: './default-page-layout.component.html',
@@ -33,6 +35,8 @@ export class DefaultPageLayoutComponent {
   @Input() pageServiceOptional : any = null;
   @Input() path                : string = "";
   @Input() disableSaveBtn      : boolean = true;
+  @Input() showList            : boolean = true;
+
   @Output() setList = new EventEmitter();
  
   pageSearchForm! : FormGroup<PageSearchForm> 
@@ -41,6 +45,7 @@ export class DefaultPageLayoutComponent {
   pageSize        : number = 5;
   pageLength      : number = 0;
   page            : number = 0;
+  
 
   constructor(private router:Router, private pageService:DefaultPageService,  private toastService: ToastrService){
     
@@ -60,7 +65,9 @@ export class DefaultPageLayoutComponent {
       this.setPageService(this.pageServiceOptional);
     }
 
-    this.search();
+    if(this.showList){
+      this.search();
+    }
   }
 
   triggerSubmit(){ 
@@ -134,7 +141,7 @@ export class DefaultPageLayoutComponent {
   }
 
   submit(){ 
-   
+    console.log(this.pageForm.value);
     this.pageService.save(this.pageForm.value).subscribe({
       next: () =>  {
          this.toastService.success("Dados salvos com sucesso!"),

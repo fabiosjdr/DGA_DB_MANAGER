@@ -1,0 +1,49 @@
+<app-container-general> 
+
+    <div class="d-flex d justify-content-center col-md-8 col-lg-10 px-md-4" main-area>
+        <div class=" col-10 pt-3 pb-2 mb-3 border-bottom">
+
+            <div class="card card-user">
+                <div class="card-header">
+                    <span class="card-title">Detalhes da atividade</span> 
+                </div>
+
+                <div class="card-body ">
+                     
+                    <smart-kanban #kanban 
+                        [messages]="messages"
+                        [addNewColumn]="addNewColumn" 
+                        [allowColumnRemove]="allowColumnRemove" 
+                        [collapsible]="collapsible" 
+                        [addNewButton]="addNewButton" 
+                        [editable]="editable" 
+                        [columnActions]="columnActions" 
+                        [columnEditMode]="columnEditMode"
+                        [columnFooter]="columnFooter" 
+                        [columnSummary]="columnSummary" 
+                        [columnColors]="columnColors" 
+                        [columnColorEntireSurface]="columnColorEntireSurface" 
+                        [allowColumnEdit]="allowColumnEdit" 
+                        [allowColumnReorder]="allowColumnReorder" 
+                        [taskActions]="taskActions" 
+                        [dataSource]="dataSource" 
+                        [taskDue]="taskDue"  
+                        [taskProgress]="taskProgress" 
+                        [columns]="columns"
+                        
+                        (change)="onKanbanChange($event)"
+                        (columnAdd)="onColumnAdd($event)"
+                        (columnUpdate)="onColumnUpdate($event)"
+                        (columnRemove)="onColumnRemove($event)"
+                        (taskAdd)="onTaskAdd($event)"
+                        (taskUpdate)="onTaskUpdate($event)"
+                        (taskRemove)="onTaskRemove($event)"
+                        >
+                    </smart-kanban>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</app-container-general>

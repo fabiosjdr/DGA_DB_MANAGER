@@ -79,7 +79,7 @@ public class ActivityDetailController {
         ActivityDetail  newObj = new ActivityDetail();
                         newObj.setActivity(activity);
                         newObj.setTitle(body.title());
-                        newObj.setTitle(body.description());
+                        newObj.setDescription(body.description());
                         newObj.setUser(authUser);
                         newObj.setStage(stage);
         
@@ -106,7 +106,7 @@ public class ActivityDetailController {
 
             domain.setActivity(activity);
             domain.setTitle(body.title());
-            domain.setTitle(body.description());
+            domain.setDescription(body.description());
             domain.setUser(authUser);
             domain.setStage(stage);
 

@@ -163,8 +163,9 @@ path="activity"
               <td>{{ list.start_date }}</td>
               <td>{{ list.end_date }}</td>
               <td>
-                  <input type="button" (click)="edit(list.id)"    class="btn btn-outline-primary" value="editar">
-                  <input type="button" (click)="delete(list.id)"  class="btn btn-outline-danger"  value="excluir">
+                  <input type="button" (click)="edit(list.id)"    class="btn btn-outline-primary" value="Editar">
+                  <input type="button" (click)="delete(list.id)"  class="btn btn-outline-danger"  value="Excluir">
+                  <input type="button" (click)="kanban(list.id)"  class="btn btn-outline-secondary"  value="Detalhes">
               </td> 
             </tr>
           </tbody>

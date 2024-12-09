@@ -13,6 +13,8 @@ public interface ActivityStageRepository extends JpaRepository<ActivityStage,Big
 
      Optional<List<ActivityStage>> findByActivityIdAndId(BigInteger id_activity,BigInteger id);
 
+     Optional<List<ActivityStage>> findByActivityIdAndName(BigInteger id_activity,String name);
+
     // @Query("SELECT a FROM activities a WHERE a.activity  LIKE CONCAT('%', :text, '%') ")
     // Page<Activity> findByActivityContainingIgnoreCase(@Param("text") String text, Pageable pageable);
 }

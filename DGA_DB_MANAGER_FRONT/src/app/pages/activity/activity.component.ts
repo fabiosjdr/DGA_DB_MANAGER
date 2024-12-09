@@ -22,6 +22,7 @@ import { ProjectService } from '../../services/project.service';
 import { Status } from '../../models/status.interface';
 import { StatusService } from '../../services/status.service';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-activity',
@@ -81,6 +82,7 @@ export class ActivityComponent implements OnInit {
     private categoryService: CategoryService, 
     private projectService : ProjectService, 
     private statusService  : StatusService, 
+    private router         : Router
   ){
    
     //faz o vinculo com o formulario padrao
@@ -214,38 +216,44 @@ export class ActivityComponent implements OnInit {
    // this.DefaultPageLayoutComponent.edit(id);
 
     this.DefaultPageLayoutComponent.edit(id).subscribe({
+
       next: (res) => {
 
         this.clientService.get(res.client.id).subscribe({
-          next: (res) =>  {
-            this.clientControl.setValue(res);
+          next: (resCli) =>  {
+            this.clientControl.setValue(resCli);
+            this.autoFnClient.setValue(resCli);
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
 
         this.categoryService.get(res.category.id).subscribe({
-          next: (res) =>  {
-            this.categoryControl.setValue(res);
+          next: (resCat) =>  {
+            this.categoryControl.setValue(resCat);
+            this.autoFnCategory.setValue(resCat);
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
 
         this.statusService.get(res.status.id).subscribe({
-          next: (res) =>  {
-            this.statusControl.setValue(res);
+          next: (resStatus) =>  {
+            this.statusControl.setValue(resStatus);
+            this.autoFnStatus.setValue(resStatus);
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
 
         this.projectService.get(res.project.id).subscribe({
-          next: (res) =>  {
-            this.projectControl.setValue(res);
+          next: (resProj) =>  {
+            this.projectControl.setValue(resProj);
+            this.autoFnProject.setValue(resProj);
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
 
 
       }
+
     })
   }
 
@@ -253,5 +261,8 @@ export class ActivityComponent implements OnInit {
     this.DefaultPageLayoutComponent.delete(id).subscribe();
   }
   
+  kanban(id:string){
+    this.router.navigate(['kanban', id]);
+  }
 }
 
