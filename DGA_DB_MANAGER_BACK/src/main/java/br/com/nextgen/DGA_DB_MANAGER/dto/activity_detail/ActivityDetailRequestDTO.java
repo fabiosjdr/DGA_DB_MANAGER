@@ -11,5 +11,9 @@ public record ActivityDetailRequestDTO(
               BigInteger    id_stage,
               String        title, 
               BigInteger    id_user,
-              String        description
+              String        description,
+              String        priority,
+              String        color,
+              String        start_date,
+              String        due_date
 ){}

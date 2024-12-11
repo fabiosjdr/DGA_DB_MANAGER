@@ -38,11 +38,10 @@ export class MeComponent implements OnInit,AfterViewInit {
   }
 
   ngAfterViewInit() {
+
     if (this.DefaultUserLayoutComponent) {
       this.DefaultUserLayoutComponent.edit(this.DefaultPageLayoutComponent,'me');
-    } else {
-    
-    }
+    } 
 
     this.cdr.detectChanges(); // Atualiza a visualização, se necessário
   }
@@ -51,8 +50,8 @@ export class MeComponent implements OnInit,AfterViewInit {
   
     this.meForm = form;
 
-     // Marca a visualização como atualizada
-     this.cdr.detectChanges();
+    // Marca a visualização como atualizada
+    this.cdr.detectChanges();
   }
 
   setFormValid(valid:boolean){

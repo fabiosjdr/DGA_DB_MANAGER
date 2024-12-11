@@ -20,66 +20,16 @@
 
     <ul class="nav nav-pills flex-column mb-auto">
 
-      <li class="nav-item">
-        <a href="/users" class="nav-link " aria-current="users">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
-          Usuarios
+      <li *ngFor="let menu of menuList">
+        <!--[attr.aria-current]="menu.name"-->
+        <a [href]="'/' +menu.path" class="nav-link " (click)="onMenuClick(menu.name)" [ngClass]="{ 'active': selectedMenu === menu.name }" >
+          <svg class="bi pe-none me-2" width="16" height="16">
+            <use [attr.xlink:href]="menu.name"></use>
+          </svg>
+          {{ capitalizeWords(menu.name) }}
         </a>
       </li>
-      
-
-      <li>
-        <a href="/activity" class="nav-link link-body-emphasis ">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
-          Atividades
-        </a>
-      </li>
-
-      <li>
-        <a href="/category" class="nav-link link-body-emphasis ">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
-          Categorias
-        </a>
-      </li>
-      <li>
-        <a href="/client" class="nav-link link-body-emphasis">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
-          Clientes
-        </a>
-      </li>
-      <li>
-        <a href="/project" class="nav-link link-body-emphasis">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
-          Projetos
-        </a>
-      </li>
-      
-      <li>
-        <a href="/status" class="nav-link link-body-emphasis ">
-          <svg class="bi pe-none me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
-          Status
-        </a>
-      </li>
-
-      
-
-      <!-- <li class="mb-1">
-        <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-          Gestão
-        </button>
-        <div class="collapse" id="orders-collapse">
-          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-            <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Clientes</a></li>
-            <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Projetos</a></li>
-            <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Atividades</a></li>
-            
-          </ul>
-        </div>
-      </li> -->
 
     </ul>
 
-    
-
-    
   </div>

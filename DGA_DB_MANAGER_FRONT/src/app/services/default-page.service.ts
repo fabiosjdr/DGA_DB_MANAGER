@@ -31,9 +31,14 @@ export class DefaultPageService {
     }
 
     get(id:string){
+      console.log(this.apiURL+"/"+id);
       return this.httpClient.get<any>(this.apiURL+"/"+id, { headers }).pipe(
         map((response: any) => response)
       );
+    }
+
+    post(values:object){
+      return this.httpClient.post<any>(this.apiURL,values,{headers});
     }
 
     save(values:object){

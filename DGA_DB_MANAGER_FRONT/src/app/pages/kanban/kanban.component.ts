@@ -11,6 +11,8 @@ import { DetailsService } from '../../services/details.service';
 import { Detail } from '../../models/detail.interface';
 import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
+import { UserService } from '../../services/user.service';
+import { Users } from '../../models/users.interface';
 
 @Component({
   selector: 'app-kanban',
@@ -52,12 +54,21 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   messages                 = ptBr
   
   
-  columns   : { id: number;label: string; dataField: string }[] = [];
-  dataSource: { id: number;status: string;text: string}[] = [];
+  columns   : { id: number; label : string; dataField: string}[] = [];
+  dataSource: { id: number; status: string; text     : string}[] = [];
+  users     : { id: number; name  : string}[] = [];
+  // users = [
+  //   { id: 0, name: 'Andrew', image: './../../../src/images/people/andrew.png' },
+  //   { id: 1, name: 'Anne', image: './../../../src/images/people/anne.png' },
+  //   { id: 2, name: 'Janet', image: './../../../src/images/people/janet.png' },
+  //   { id: 3, name: 'John', image: './../../../src/images/people/john.png' },
+  //   { id: 4, name: 'Laura', image: './../../../src/images/people/laura.png' }
+  // ];
 
   constructor(
-    private route : ActivatedRoute,
-    private stage : StagesService, 
+    private route  : ActivatedRoute,
+    private stage  : StagesService, 
+    private user   : UserService, 
     private detail : DetailsService, 
     private toastService: ToastrService
   ) {}
@@ -75,7 +86,31 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   init(): void {
       // init code.
       this.loadColumns();
+      this.loadUser();
       this.loadKanbanData();
+  }
+
+  loadUser(): void{
+
+    this.user.getAll().subscribe({
+
+      next: (res) => {
+        //console.log(res);
+        this.users = res.map((item: Users) => ({
+          id       : item.id,
+          name     : item.name
+        }));
+
+      },
+      error: (err) => {
+        console.error('Erro ao tentar obter usuários:', err);
+      },
+      complete: () => {
+        //console.log(this.users)
+        //console.log('Operação finalizada.');
+      },
+    });
+
   }
 
   loadColumns(): void {
@@ -104,12 +139,17 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
     this.detail.get(this.id).subscribe({
       next: (res) => {
-
+        console.log(res);
         this.dataSource = res.map((item: Detail) => ({
-          id: Number(item.id), 
-          text: item.title, 
-          status: item.stage.name.replace(' ','_'),
-          description: item.description
+          id         : Number(item.id), 
+          text       : item.title, 
+          status     : item.stage.name.replace(' ','_'),
+          description: item.description,
+          priority   : item.priority,
+          color      : item.color,
+          userId     : item.user.id,
+          startDate  : item.start_date,
+          dueDate    : item.due_date
         }));
 
       },
@@ -178,7 +218,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
                       id         : (item?.id) ? item.id : null,
                       id_activity: this.id,
                       name       : item.label,
-                      timer: false
+                      timer      : false
                     })
                   );
 
@@ -208,10 +248,10 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
   }
 
-  saveTask(detail:any){
+  saveTask(detail:any): void{
 
     const payload = this.prepareTasKData(detail);
-    
+    console.log(payload);
     this.detail.save(payload).subscribe({
       next: () =>  {
          this.toastService.success("Dados salvos com sucesso!");
@@ -221,7 +261,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   }
 
   prepareTasKData(detail:any){
-  
+   
     const value  = [detail.value];
     const filter = detail.value.status;
     const id     = detail.id;
@@ -235,7 +275,11 @@ export class KanbanComponent implements AfterViewInit, OnInit{
                       id_activity: this.id,
                       title      : item.text,
                       description: item.description,
-                      id_user    : 1,
+                      priority   : item.priority,
+                      color      : item.color,
+                      id_user    : item.userId,
+                      start_date : item.startDate,
+                      due_date   : item.dueDate,
                       id_stage   : stage[0].id
                     })
                   );

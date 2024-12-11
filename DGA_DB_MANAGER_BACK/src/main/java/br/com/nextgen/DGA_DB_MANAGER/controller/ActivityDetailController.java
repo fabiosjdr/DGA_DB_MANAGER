@@ -1,6 +1,9 @@
 package br.com.nextgen.DGA_DB_MANAGER.controller;
 
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -23,6 +26,7 @@ import br.com.nextgen.DGA_DB_MANAGER.dto.activity_detail.ActivityDetailRequestDT
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity.ActivityRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_detail.ActivityDetailRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_stage.ActivityStageRepository;
+import br.com.nextgen.DGA_DB_MANAGER.repositories.user.UserRepository;
 import br.com.nextgen.DGA_DB_MANAGER.service.AuthService;
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +39,7 @@ public class ActivityDetailController {
     private final ActivityDetailRepository repository;
     private final ActivityRepository       activityRepository;
     private final ActivityStageRepository  activityStageRepository;
+    private final UserRepository           userRepository;
     private final AuthService              authService;
 
     @GetMapping("/{id_activity}")
@@ -100,16 +105,31 @@ public class ActivityDetailController {
         
         ActivityDetail  domain   = this.repository.findById(body.id()).orElse(null);
         Activity        activity = activityRepository.findById(body.id_activity()).orElseThrow(() -> new RuntimeException("activity not found"));
-        ActivityStage   stage    = activityStageRepository.findById(body.id_stage()).orElseThrow(() -> new RuntimeException("activity not found"));
+        ActivityStage   stage    = activityStageRepository.findById(body.id_stage()).orElseThrow(() -> new RuntimeException("stage not found"));
+        User            user     = userRepository.findById(body.id_user()).orElseThrow(() -> new RuntimeException("stage not found"));
         
         if(domain != null){
 
             domain.setActivity(activity);
             domain.setTitle(body.title());
             domain.setDescription(body.description());
-            domain.setUser(authUser);
+            domain.setUser(user);
             domain.setStage(stage);
+            domain.setPriority(body.priority());
+            domain.setColor(body.color());
 
+            if(body.start_date() != null){
+                Instant instant = Instant.parse(body.start_date());
+                LocalDateTime startDate = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                domain.setStart_date(startDate);
+            }
+
+            if(body.due_date() != null){
+                Instant instant = Instant.parse(body.due_date());
+                LocalDateTime dueDate = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                domain.setDue_date(dueDate);
+            }
+           
             this.repository.save(domain);
 
             return ResponseEntity.ok(domain);
