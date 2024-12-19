@@ -82,8 +82,14 @@ public class ActivityStageController {
         if(domain != null){
 
             domain.setActivity(activity);
-            domain.setName(body.name());
-            domain.setTimer(body.timer());
+
+            if(body.name() != null){
+              domain.setName(body.name());
+            }
+
+            if(body.timer() != null){
+                domain.setTimer(body.timer());
+            }
 
             this.repository.save(domain);
 

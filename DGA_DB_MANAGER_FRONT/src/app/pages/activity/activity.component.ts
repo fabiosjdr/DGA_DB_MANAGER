@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DefaultPageLayoutComponent } from '../../components/default-page-layout/default-page-layout.component';
 import { MatInputModule } from '@angular/material/input';
@@ -24,6 +24,12 @@ import { StatusService } from '../../services/status.service';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { Router } from '@angular/router';
 
+import {
+  MatDialog,
+  MatDialogModule,
+} from '@angular/material/dialog';
+import { ActivityReportComponent } from '../../components/activity-report/activity-report.component';
+
 @Component({
   selector: 'app-activity',
   standalone: true,
@@ -33,10 +39,12 @@ import { Router } from '@angular/router';
     MatInputModule,
     MatIconModule,
     MatFormFieldModule,
+    MatDialogModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
     NgxMaskDirective,
-    CommonModule //para o ngFor funcionar,
+    CommonModule, //para o ngFor funcionar,
+
   ],
   providers: [
     provideNgxMask(),
@@ -75,6 +83,9 @@ export class ActivityComponent implements OnInit {
   autoFnProject! : Autocomplete ;
   autoFnStatus!  : Autocomplete ;
 
+
+  readonly dialog = inject(MatDialog);
+
   constructor(
     private pageService    : DefaultPageService,
     private toastService   : ToastrService,
@@ -101,21 +112,21 @@ export class ActivityComponent implements OnInit {
     
   }
 
-  validateDate(e:any,type:string,field:string){
+  // validateDate(e:any,type:string,field:string){
     
-    const datePipe      = new DatePipe('pt-BR');
+  //   const datePipe      = new DatePipe('pt-BR');
 
-    if(type == 'hour'){
-      var dataFormatada   = this.activityForm.get(field)?.value;
-      dataFormatada       = dataFormatada != '' ? datePipe.transform(dataFormatada, `yyyy-MM-dd ${e.target.value}`) : datePipe.transform( new Date(), `yyyy-MM-dd ${e.target.value}`);
-      this.activityForm.patchValue({[field]:dataFormatada});
-    }else{
-      const hour          = this.startHourControl.value != null && this.startHourControl.value != '' ? this.startHourControl.value.slice(0,2) + ':' + this.startHourControl.value.slice(2) : '00:00';
-      const dataFormatada = datePipe.transform(e.target.value, `yyyy-MM-dd ${hour}`)
-      this.activityForm.patchValue({[field]:dataFormatada});
-    }
-    console.log(this.activityForm.value)
-  }
+  //   if(type == 'hour'){
+  //     var dataFormatada   = this.activityForm.get(field)?.value;
+  //     dataFormatada       = dataFormatada != '' ? datePipe.transform(dataFormatada, `yyyy-MM-dd ${e.target.value}`) : datePipe.transform( new Date(), `yyyy-MM-dd ${e.target.value}`);
+  //     this.activityForm.patchValue({[field]:dataFormatada});
+  //   }else{
+  //     const hour          = this.startHourControl.value != null && this.startHourControl.value != '' ? this.startHourControl.value.slice(0,2) + ':' + this.startHourControl.value.slice(2) : '00:00';
+  //     const dataFormatada = datePipe.transform(e.target.value, `yyyy-MM-dd ${hour}`)
+  //     this.activityForm.patchValue({[field]:dataFormatada});
+  //   }
+  //   console.log(this.activityForm.value)
+  // }
 
   
   ngOnInit() {
@@ -263,6 +274,23 @@ export class ActivityComponent implements OnInit {
   
   kanban(id:string){
     this.router.navigate(['kanban', id]);
+  }
+
+  openDialog(id:string): void {
+
+    const dialogRef = this.dialog.open(ActivityReportComponent, {
+      data: {activity: id},
+      height: '50%',
+      width: '600px',
+      
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result !== undefined) {
+        console.log('closed')
+      }
+    });
   }
 }
 

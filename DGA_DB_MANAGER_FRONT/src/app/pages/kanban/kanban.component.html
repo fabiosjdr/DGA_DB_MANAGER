@@ -9,8 +9,14 @@
                 </div>
 
                 <div class="card-body ">
+
                      
                     <smart-kanban #kanban 
+                        
+                        [dialogRendered]="dialogRendered"
+                        [taskActions]="taskActions"
+                        [columnHeaderTemplate]="headerHtml"
+
                         [messages]="messages"
                         [addNewColumn]="addNewColumn" 
                         [allowColumnRemove]="allowColumnRemove" 
@@ -31,7 +37,7 @@
                         [taskProgress]="taskProgress" 
                         [columns]="columns"
                         [users]="users"
-                        
+
                         (change)="onKanbanChange($event)"
                         (columnAdd)="onColumnAdd($event)"
                         (columnUpdate)="onColumnUpdate($event)"
@@ -39,6 +45,8 @@
                         (taskAdd)="onTaskAdd($event)"
                         (taskUpdate)="onTaskUpdate($event)"
                         (taskRemove)="onTaskRemove($event)"
+                        (columnReorder)="onColumnReorder($event)"
+                        (dragEnd)="onDragEnd($event)"
                         >
                     </smart-kanban>
 

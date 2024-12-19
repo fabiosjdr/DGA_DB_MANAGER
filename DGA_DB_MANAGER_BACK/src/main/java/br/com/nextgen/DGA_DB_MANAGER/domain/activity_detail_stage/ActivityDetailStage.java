@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,9 @@ public class ActivityDetailStage {
     private BigInteger id;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
+
+    @Transient
+    private Long          duration;
 
     @OneToOne
     @JoinColumn(name = "id_activity_detail") 

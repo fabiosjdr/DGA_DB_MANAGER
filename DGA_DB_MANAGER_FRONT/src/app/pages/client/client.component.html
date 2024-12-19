@@ -1,6 +1,7 @@
 <app-default-page-layout 
 title="Clientes" 
-[pageForm]="clientForm" path="client" 
+path="client" 
+[pageForm]="clientForm" 
 (setList)="setList($event)" 
 [disableSaveBtn]="!clientForm.valid"
 >

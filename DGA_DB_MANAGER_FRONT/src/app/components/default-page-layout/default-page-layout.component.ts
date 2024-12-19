@@ -7,7 +7,7 @@ import { DefaultPageService } from '../../services/default-page.service';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 interface PageSearchForm {
   search : FormControl,
@@ -219,6 +219,48 @@ export class DefaultPageLayoutComponent {
     this.page     = event.pageIndex;
     this.pageSize = event.pageSize;
     this.search();
+  }
+
+  validateDate(e:any,type:string,field:string,formControl:FormControl){
+    
+    const datePipe      = new DatePipe('pt-BR');
+   
+    if(type == 'hour'){
+      var dataFormatada   = this.pageForm.get(field)?.value;
+      dataFormatada       = dataFormatada != '' ? datePipe.transform(dataFormatada, `yyyy-MM-dd ${e.target.value}`) : datePipe.transform( new Date(), `yyyy-MM-dd ${e.target.value}`);
+      
+      if(this.checkDate(dataFormatada)){
+        this.pageForm.patchValue({[field]:dataFormatada});
+      }else{
+        alert('hora invalida');
+        e.target.value = null;
+      }
+
+    }else{
+      const hour          = formControl.value != null && formControl.value != '' ? formControl.value.slice(0,2) + ':' + formControl.value.slice(2) : '00:00';
+      const dataFormatada = datePipe.transform(e.target.value, `yyyy-MM-dd ${hour}`)
+
+      if(this.checkDate(dataFormatada)){
+        this.pageForm.patchValue({[field]:dataFormatada});
+      }else{
+        alert('data invalida');
+        e.target.value = null;
+      }
+      this.pageForm.patchValue({[field]:dataFormatada});
+      
+    }
+    console.log(this.pageForm.value)
+  }
+
+  checkDate(dateString: string|null): boolean {
+
+    if(dateString == null){
+      return false;
+    }
+    const date = new Date(dateString);
+
+    // Verifica se a data é válida
+    return !isNaN(date.getTime()); // `getTime()` retorna NaN para datas inválidas
   }
   
 }

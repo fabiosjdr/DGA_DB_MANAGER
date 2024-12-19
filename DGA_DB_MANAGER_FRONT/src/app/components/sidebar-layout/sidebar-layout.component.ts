@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { LoginService } from '../../services/login.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './sidebar-layout.component.html',
   styleUrl: './sidebar-layout.component.scss'
 })
-export class SidebarLayoutComponent implements OnInit {
+export class SidebarLayoutComponent implements OnInit,AfterViewInit {
   
   menuList    : Menu[] = [];
   selectedMenu: string | null = sessionStorage.getItem('selectedMenu');
@@ -25,6 +25,11 @@ export class SidebarLayoutComponent implements OnInit {
 
   ngOnInit(){
     // this.DefaultUserLayoutComponent.edit('me');
+    
+  }
+
+  ngAfterViewInit(): void {
+    
     this.userService.get('me').subscribe({
 
       next: (res) =>  {
@@ -39,7 +44,11 @@ export class SidebarLayoutComponent implements OnInit {
         }
 
       },
-      error: () => this.toastService.error("Erro inesperado! Falha ao obter dados do usuário logado")
+      error: (e) =>{ 
+        console.log(e);
+        this.toastService.error("Erro inesperado! Falha ao obter dados do usuário logado")
+
+      }
     
     })
   }

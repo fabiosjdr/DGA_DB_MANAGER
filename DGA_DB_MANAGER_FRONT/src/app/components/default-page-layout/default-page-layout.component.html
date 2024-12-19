@@ -7,31 +7,35 @@
                 <div class="card-header">
                     <span class="card-title">{{title}}</span> 
                 </div>
-
-                <div class="card-body ">
-                    <ng-content select="[form-page-body]"></ng-content>
-                </div>
                 
-                <div class="card-footer bg-transparent border-primary">
+                <section class="form-section">
+                    <div class="card-body ">
+                        <ng-content select="[form-page-body]"></ng-content>
+                    </div>
+                
+                    <div class="card-footer bg-transparent border-primary">
+                            
+                        <div class="row pt-2">
+                            <div class="d-flex justify-content-center">
+                            
+                                    <button class="btn btn-outline-primary btn-round col-3 m-2" [disabled]="disableSaveBtn" (click)="triggerSubmit()">Salvar</button>
                         
-                    <div class="row pt-2">
-                        <div class="d-flex justify-content-center">
-                           
-                                <button class="btn btn-outline-primary btn-round col-3 m-2" [disabled]="disableSaveBtn" (click)="triggerSubmit()">Salvar</button>
-                       
-                                <button class="btn btn-outline-secondary btn-round col-3 m-2" (click)="defaultState()">Cancelar</button>
-                          
+                                    <button class="btn btn-outline-secondary btn-round col-3 m-2" (click)="defaultState()">Cancelar</button>
+                            
+                            </div>
+                            
                         </div>
                         
+                        <ng-content select="[form-page-footer]">
+
+                            
+
+                        </ng-content>
+
                     </div>
                     
-                    <ng-content select="[form-page-footer]">
+                </section>
 
-                        
-
-                    </ng-content>
-
-                </div>
             </div>
             
             <hr *ngIf="this.showList">

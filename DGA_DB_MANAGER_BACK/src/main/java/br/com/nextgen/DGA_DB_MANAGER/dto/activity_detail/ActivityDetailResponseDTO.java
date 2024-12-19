@@ -19,7 +19,8 @@ public record ActivityDetailResponseDTO(
     LocalDateTime start_date,
     LocalDateTime due_date,
     String        priority,
-    String        color
+    String        color,
+    Integer       progress
 ) {
 
     public ActivityDetailResponseDTO() {
@@ -27,6 +28,7 @@ public record ActivityDetailResponseDTO(
             null,
             null, 
             null, 
+            null,
             null,
             null,
             null,

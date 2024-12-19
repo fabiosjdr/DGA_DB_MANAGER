@@ -101,6 +101,7 @@ public class ActivityController{
         
         return ResponseEntity.ok(domain);
     }
+    
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Validated ActivityRequestDTO body){
@@ -121,7 +122,7 @@ public class ActivityController{
         Status   status   = statusRepository.findById(body.id_project().toString()).orElseThrow(() -> new RuntimeException("Status not found"));
         
         LocalDateTime startDate   = (body.end_date() != null)   ?  LocalDateTime.parse(body.start_date(), formatter)   : null;
-        LocalDateTime endDate   = (body.end_date() != null)   ?  LocalDateTime.parse(body.end_date(), formatter)   : null;
+        LocalDateTime endDate     = (body.end_date() != null)   ?  LocalDateTime.parse(body.end_date(), formatter)   : null;
 
         Activity  newObj = new Activity();
                   newObj.setActivity(body.activity());

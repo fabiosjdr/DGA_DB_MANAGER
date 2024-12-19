@@ -42,7 +42,6 @@ export class LoginComponent {
   submit(){
     this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
       next: () => { 
-        
         this.toastService.success("Login feito com sucesso!")
         this.router.navigate(["activity"]);
       },

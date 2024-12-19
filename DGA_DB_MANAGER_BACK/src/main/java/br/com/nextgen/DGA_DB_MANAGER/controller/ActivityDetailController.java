@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity.Activity;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_detail.ActivityDetail;
+import br.com.nextgen.DGA_DB_MANAGER.domain.activity_detail_stage.ActivityDetailStage;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_stage.ActivityStage;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user.User;
 import br.com.nextgen.DGA_DB_MANAGER.dto.activity_detail.ActivityDetailRequestDTO;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity.ActivityRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_detail.ActivityDetailRepository;
+import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_detail_stage.ActivityDetailStageRespository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_stage.ActivityStageRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.user.UserRepository;
 import br.com.nextgen.DGA_DB_MANAGER.service.AuthService;
@@ -36,9 +39,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor //lombok ja cria o construtor para n precisar colocar autowired em cada classe
 public class ActivityDetailController {
 
-    private final ActivityDetailRepository repository;
-    private final ActivityRepository       activityRepository;
-    private final ActivityStageRepository  activityStageRepository;
+    private final ActivityDetailRepository        repository;
+    private final ActivityRepository              activityRepository;
+    private final ActivityStageRepository         activityStageRepository;
+    private final ActivityDetailStageRespository  activityDetailStageRespository;
+
     private final UserRepository           userRepository;
     private final AuthService              authService;
 
@@ -66,6 +71,23 @@ public class ActivityDetailController {
         return ResponseEntity.ok(domain);
     }
 
+    private ActivityDetailStage saveDetail(ActivityDetail activityDetail,ActivityStage stage){
+        
+        Instant instant = Instant.now() ;
+        LocalDateTime startDate = instant.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDateTime();
+
+        ActivityDetailStage  newDetailStage = new ActivityDetailStage();
+        newDetailStage.setDetail(activityDetail);
+        newDetailStage.setStage(stage);
+        newDetailStage.setStart_date(startDate);
+        newDetailStage.setStage(stage);
+
+        this.activityDetailStageRespository.save(newDetailStage);
+
+        return newDetailStage;
+    }
+
+    @Transactional
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Validated ActivityDetailRequestDTO body){
 
@@ -78,8 +100,8 @@ public class ActivityDetailController {
 
         //Account account = authService.getAccount();
 
-        Activity      activity   = activityRepository.findById(body.id_activity()).orElseThrow(() -> new RuntimeException("activity not found"));
-        ActivityStage stage      = activityStageRepository.findById(body.id_stage()).orElseThrow(() -> new RuntimeException("stage not found"));
+        Activity        activity   = activityRepository.findById(body.id_activity()).orElseThrow(() -> new RuntimeException("activity not found"));
+        ActivityStage   stage      = activityStageRepository.findById(body.id_stage()).orElseThrow(() -> new RuntimeException("stage not found"));
 
         ActivityDetail  newObj = new ActivityDetail();
                         newObj.setActivity(activity);
@@ -89,10 +111,16 @@ public class ActivityDetailController {
                         newObj.setStage(stage);
         
         this.repository.save(newObj);
+
+        if(stage.getTimer()){
+            this.saveDetail(newObj,stage);
+        } 
+
         return ResponseEntity.ok(newObj);
      
     }
 
+    @Transactional
     @PutMapping
     public ResponseEntity<?> update(@RequestBody @Validated ActivityDetailRequestDTO body){
 
@@ -117,20 +145,46 @@ public class ActivityDetailController {
             domain.setStage(stage);
             domain.setPriority(body.priority());
             domain.setColor(body.color());
+            domain.setProgress(body.progress());
 
             if(body.start_date() != null){
+
                 Instant instant = Instant.parse(body.start_date());
-                LocalDateTime startDate = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                LocalDateTime startDate = instant.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDateTime();
                 domain.setStart_date(startDate);
             }
 
             if(body.due_date() != null){
+
                 Instant instant = Instant.parse(body.due_date());
-                LocalDateTime dueDate = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                LocalDateTime dueDate = instant.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDateTime();
                 domain.setDue_date(dueDate);
+
             }
            
             this.repository.save(domain);
+
+            if(stage.getId() != body.old_id_stage()){
+
+                List<ActivityDetailStage>  activityDetailStage =  this.activityDetailStageRespository.findByDetailIdAndStageId(body.id(), body.old_id_stage()).orElse(null); //.orElseThrow(() -> new RuntimeException("activity not found"));
+                
+                if (activityDetailStage != null && !activityDetailStage.isEmpty()) {
+                    
+                    ActivityDetailStage updateDetailStage = activityDetailStage.get(activityDetailStage.size()-1);
+                    Instant instant = Instant.now() ;
+                    LocalDateTime endDate = instant.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDateTime();
+                    updateDetailStage.setEnd_date(endDate);
+
+                    this.activityDetailStageRespository.save(updateDetailStage);
+                }
+
+                if(stage.getTimer()){
+                    this.saveDetail(domain, stage);
+                }
+                    
+                
+
+            }
 
             return ResponseEntity.ok(domain);
 
@@ -155,5 +209,7 @@ public class ActivityDetailController {
 
         return ResponseEntity.ok(domain);
     }
+
+    
 
 }

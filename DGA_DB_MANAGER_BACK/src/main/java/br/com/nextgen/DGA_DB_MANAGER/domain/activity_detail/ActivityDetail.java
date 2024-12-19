@@ -31,10 +31,11 @@ public class ActivityDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
-    private String title;
-    private String description;
-    private String priority;
-    private String color;
+    private String     title;
+    private String     description;
+    private String     priority;
+    private String     color;
+    private Integer    progress;
     private LocalDateTime start_date;
     private LocalDateTime due_date;
     

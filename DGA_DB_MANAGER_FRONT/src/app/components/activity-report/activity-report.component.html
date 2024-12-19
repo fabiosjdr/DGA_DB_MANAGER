@@ -1,0 +1,46 @@
+    <section class="report-content">
+
+        <h2 mat-dialog-title>Horas trabalhadas</h2>
+       
+        <mat-dialog-content>
+           
+            <div class="table-responsive small">
+
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                        <th scope="col">Tarefa</th>
+                        <th scope="col">Fase</th>
+                        <th scope="col">Usuário</th>
+                        <th scope="col">Tempo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let group of groupedActivities">
+                        <!-- Exibe o nome do usuário e o total de tempo -->
+                        <tr class="table-primary">
+                            <td colspan="4">
+                            <strong>Usuário: {{ group.user_name }}</strong> 
+                            (Total: {{ formatDuration(group.total_duration) }})
+                            </td>
+                        </tr>
+                        <!-- Exibe as tarefas do grupo -->
+                        <tr *ngFor="let activity of group.activities" class="pt-3">
+                            <td>{{ activity.title }}</td>
+                            <td>{{ activity.stage_name }}</td>
+                            <td>{{ activity.user_name }}</td>
+                            <td>{{ formatDuration(activity.duration ) }} </td>
+                        </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+                
+            </div>
+
+        </mat-dialog-content>
+        <mat-dialog-actions class="report-actions">
+            <button mat-button (click)="close()">Fechar</button>
+        </mat-dialog-actions>
+        
+    </section>
+

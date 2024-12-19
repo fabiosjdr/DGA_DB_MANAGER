@@ -8,6 +8,7 @@ export interface Detail {
     description: string,
     priority   : string,
     color      : string,
+    progress   : number,
     start_date : Date,
     due_date   : Date,
     user       : Users,

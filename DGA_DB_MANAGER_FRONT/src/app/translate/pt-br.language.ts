@@ -93,7 +93,8 @@ export const ptBr = {
         'tasksSummaryOne' : '1 tarefa',
         'tasksSummary' : '{{summary}} tarefas',
         'commentsTab'   : 'Comentários',
-        'empty'         : 'vazio'
+        'empty'         : 'vazio',
+        'description'   : 'Descrição'
     },
 
 };
