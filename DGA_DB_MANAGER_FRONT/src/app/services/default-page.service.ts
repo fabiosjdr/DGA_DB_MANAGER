@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs';
 import { SearchResponse } from '../types/search-response.type';
 
-const token =  sessionStorage.getItem("auth-token");
-const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+let token   :string|null;
+let headers :HttpHeaders;
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,12 @@ export class DefaultPageService {
   
   private apiURL: string = '';
 
-  constructor(private httpClient:HttpClient) { }
+  constructor(private httpClient:HttpClient) {
+
+     token =  sessionStorage.getItem("auth-token");
+     headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+   }
 
     setApiURL(url: string) {
       this.apiURL = url;
@@ -31,9 +36,14 @@ export class DefaultPageService {
     }
 
     get(id:string){
+     
       return this.httpClient.get<any>(this.apiURL+"/"+id, { headers }).pipe(
         map((response: any) => response)
       );
+    }
+
+    post(values:object){
+      return this.httpClient.post<any>(this.apiURL,values,{headers});
     }
 
     save(values:object){

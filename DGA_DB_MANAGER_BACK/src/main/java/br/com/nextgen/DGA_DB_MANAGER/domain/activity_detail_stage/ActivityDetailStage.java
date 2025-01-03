@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_detail.ActivityDetail;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_stage.ActivityStage;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +32,9 @@ public class ActivityDetailStage {
     private BigInteger id;
     private LocalDateTime start_date;
     private LocalDateTime end_date;
+
+    @Column(name = "duration", insertable = false, updatable = false)
+    private Long          duration;
 
     @OneToOne
     @JoinColumn(name = "id_activity_detail") 

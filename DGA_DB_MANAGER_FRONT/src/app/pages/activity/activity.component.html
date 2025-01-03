@@ -1,5 +1,5 @@
 <app-default-page-layout 
-title="Atividades" 
+title="Sprint" 
 [pageForm]="activityForm" 
 path="activity" 
 (setList)="setList($event)" 
@@ -10,43 +10,43 @@ path="activity"
 
           <div class="row" >
 
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="d-flex align-items-center">
                  
-                  <mat-form-field appearance="outline" class="me-1">
+                  <mat-form-field appearance="outline" class="me-1 col">
                     <mat-label>Início</mat-label>
-                    <input id="start_date" matInput (dateChange)="validateDate($event,'date','start_date')" [matDatepicker]="pickerStart" mask="00/00/0000"  placeholder="00/00/0000">
+                    <input id="start_date" matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','start_date',startHourControl)" [matDatepicker]="pickerStart" mask="00/00/0000"  placeholder="00/00/0000">
                     <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
                     <mat-datepicker #pickerStart></mat-datepicker>
                   </mat-form-field>
             
                   <mat-form-field appearance="outline">
                     <mat-label>Hora Início</mat-label>
-                    <input [formControl]="startHourControl" (change)="validateDate($event,'hour','start_date')" matInput placeholder="00:00" mask="00:00" >
+                    <input [formControl]="startHourControl" (change)="DefaultPageLayoutComponent.validateDate($event,'hour','start_date',startHourControl)" matInput placeholder="00:00" mask="00:00" >
                   </mat-form-field>
                  
                 </div>
               </div>
 
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="d-flex align-items-center">
                  
-                  <mat-form-field appearance="outline" class="me-1">
+                  <mat-form-field appearance="outline" class="me-1 col">
                     <mat-label>Fim</mat-label>
-                    <input matInput (dateChange)="validateDate($event,'date','end_date')" [matDatepicker]="pickerEnd"  mask="00/00/0000"  placeholder="00/00/0000">
+                    <input matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','end_date',endHourControl)" [matDatepicker]="pickerEnd"  mask="00/00/0000"  placeholder="00/00/0000">
                     <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                     <mat-datepicker #pickerEnd></mat-datepicker>
                   </mat-form-field>
             
                   <mat-form-field appearance="outline">
                     <mat-label>Hora Fim</mat-label>
-                    <input [formControl]="endHourControl" (change)="validateDate($event,'hour','end_date')" matInput placeholder="" placeholder="00:00" mask="00:00">
+                    <input [formControl]="endHourControl" (change)="DefaultPageLayoutComponent.validateDate($event,'hour','end_date',endHourControl)" matInput placeholder="" placeholder="00:00" mask="00:00">
                   </mat-form-field>
                 </div>
               </div>
   
                <!--Status-->
-               <mat-form-field appearance="outline" class="col-md-4 pr-1">
+               <!-- <mat-form-field appearance="outline" class="col-md-4 pr-1">
                 <mat-label>Status</mat-label>
                 <input type="text"
                        placeholder="Selecione um status"
@@ -61,7 +61,7 @@ path="activity"
                   }
                 </mat-autocomplete>
 
-              </mat-form-field>
+              </mat-form-field> -->
 
           </div>
 
@@ -142,11 +142,11 @@ path="activity"
           <thead>
             <tr>
               <th scope="col">ID</th>
-              <th scope="col">Atividade</th>
+              <th scope="col">Sprint</th>
               <th scope="col">Cliente</th>
               <th scope="col">Projeto</th>
               <th scope="col">Categoria</th>
-              <th scope="col">Status</th>
+              <!-- <th scope="col">Status</th> -->
               <th scope="col">Início</th>
               <th scope="col">Final</th>
               <th scope="col">Ações</th>
@@ -159,12 +159,26 @@ path="activity"
               <td>{{ list.client.name }}</td>
               <td>{{ list.project.name }}</td>
               <td>{{ list.category.name }}</td>
-              <td>{{ list.status.name }}</td>
-              <td>{{ list.start_date }}</td>
-              <td>{{ list.end_date }}</td>
+              <!-- <td>{{ list.status.name }}</td> -->
+              <td>{{ list.start_date | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td>{{ list.end_date  | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
               <td>
-                  <input type="button" (click)="edit(list.id)"    class="btn btn-outline-primary" value="editar">
-                  <input type="button" (click)="delete(list.id)"  class="btn btn-outline-danger"  value="excluir">
+                  <button  title="editar" (click)="edit(list.id)"   class="btn btn-outline-primary m-1"   >
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  <button   title="excluir" (click)="delete(list.id)"  class="btn btn-outline-danger m-1" >
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+
+                  <button  title="kanban" (click)="kanban(list.id)"  class="btn btn-outline-success m-1" >
+                    <i class="bi bi-kanban"></i>
+                  </button>
+
+                  <button   title="relatorio" (click)="openDialog(list.id)"   class="btn btn-outline-dark m-1" >
+                    <i class="bi bi-clock-history"></i>
+                  </button>
+
+                  
               </td> 
             </tr>
           </tbody>

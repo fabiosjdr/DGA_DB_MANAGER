@@ -13,8 +13,27 @@ html, body{
     height: 100%;
 }
 
-.no-break{
-    display: contents;
-}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+#watermark{
+    display: none !important; //remove a propagando do plugin
+}
+
+.smart-kanban-column-header-label{
+    .columnTimer{
+         float: right;
+    }
+    .columnTimer:hover{
+        cursor: pointer;
+    }
+}
+
+.smart-kanban.smart-kanban-column-color .smart-kanban-column:not(.smart-kanban-add-new-column) {
+    background: transparent !important;
+    padding: 5px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, .2), 0 0 2px rgba(0, 0, 0, .08), 0 3px 4px rgba(0, 0, 0, .03), 0 3px 16px rgba(0, 0, 0, .06);
+    border-radius: 5px;
+    box-sizing: border-box;
+}

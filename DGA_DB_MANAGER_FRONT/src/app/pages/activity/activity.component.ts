@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DefaultPageLayoutComponent } from '../../components/default-page-layout/default-page-layout.component';
 import { MatInputModule } from '@angular/material/input';
@@ -22,6 +22,13 @@ import { ProjectService } from '../../services/project.service';
 import { Status } from '../../models/status.interface';
 import { StatusService } from '../../services/status.service';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { Router } from '@angular/router';
+
+import {
+  MatDialog,
+  MatDialogModule,
+} from '@angular/material/dialog';
+import { ActivityReportComponent } from '../../components/activity-report/activity-report.component';
 
 @Component({
   selector: 'app-activity',
@@ -32,10 +39,12 @@ import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
     MatInputModule,
     MatIconModule,
     MatFormFieldModule,
+    MatDialogModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
     NgxMaskDirective,
-    CommonModule //para o ngFor funcionar,
+    CommonModule, //para o ngFor funcionar,
+
   ],
   providers: [
     provideNgxMask(),
@@ -74,6 +83,9 @@ export class ActivityComponent implements OnInit {
   autoFnProject! : Autocomplete ;
   autoFnStatus!  : Autocomplete ;
 
+
+  readonly dialog = inject(MatDialog);
+
   constructor(
     private pageService    : DefaultPageService,
     private toastService   : ToastrService,
@@ -81,6 +93,7 @@ export class ActivityComponent implements OnInit {
     private categoryService: CategoryService, 
     private projectService : ProjectService, 
     private statusService  : StatusService, 
+    private router         : Router
   ){
    
     //faz o vinculo com o formulario padrao
@@ -90,7 +103,6 @@ export class ActivityComponent implements OnInit {
       id_category: new FormControl("",[Validators.required]),
       id_client  : new FormControl("",[Validators.required]),
       id_project : new FormControl("",[Validators.required]),
-      id_status  : new FormControl("",[Validators.required]),
       start_date : new FormControl("",[Validators.required]),
       end_date   : new FormControl("",[Validators.required]),
       id_account : new FormControl(1,[Validators.required])
@@ -99,21 +111,21 @@ export class ActivityComponent implements OnInit {
     
   }
 
-  validateDate(e:any,type:string,field:string){
+  // validateDate(e:any,type:string,field:string){
     
-    const datePipe      = new DatePipe('pt-BR');
+  //   const datePipe      = new DatePipe('pt-BR');
 
-    if(type == 'hour'){
-      var dataFormatada   = this.activityForm.get(field)?.value;
-      dataFormatada       = dataFormatada != '' ? datePipe.transform(dataFormatada, `yyyy-MM-dd ${e.target.value}`) : datePipe.transform( new Date(), `yyyy-MM-dd ${e.target.value}`);
-      this.activityForm.patchValue({[field]:dataFormatada});
-    }else{
-      const hour          = this.startHourControl.value != null && this.startHourControl.value != '' ? this.startHourControl.value.slice(0,2) + ':' + this.startHourControl.value.slice(2) : '00:00';
-      const dataFormatada = datePipe.transform(e.target.value, `yyyy-MM-dd ${hour}`)
-      this.activityForm.patchValue({[field]:dataFormatada});
-    }
-    console.log(this.activityForm.value)
-  }
+  //   if(type == 'hour'){
+  //     var dataFormatada   = this.activityForm.get(field)?.value;
+  //     dataFormatada       = dataFormatada != '' ? datePipe.transform(dataFormatada, `yyyy-MM-dd ${e.target.value}`) : datePipe.transform( new Date(), `yyyy-MM-dd ${e.target.value}`);
+  //     this.activityForm.patchValue({[field]:dataFormatada});
+  //   }else{
+  //     const hour          = this.startHourControl.value != null && this.startHourControl.value != '' ? this.startHourControl.value.slice(0,2) + ':' + this.startHourControl.value.slice(2) : '00:00';
+  //     const dataFormatada = datePipe.transform(e.target.value, `yyyy-MM-dd ${hour}`)
+  //     this.activityForm.patchValue({[field]:dataFormatada});
+  //   }
+  //   console.log(this.activityForm.value)
+  // }
 
   
   ngOnInit() {
@@ -214,38 +226,44 @@ export class ActivityComponent implements OnInit {
    // this.DefaultPageLayoutComponent.edit(id);
 
     this.DefaultPageLayoutComponent.edit(id).subscribe({
+
       next: (res) => {
 
         this.clientService.get(res.client.id).subscribe({
-          next: (res) =>  {
-            this.clientControl.setValue(res);
+          next: (resCli) =>  {
+            this.clientControl.setValue(resCli);
+            this.autoFnClient.setValue(resCli);
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
 
         this.categoryService.get(res.category.id).subscribe({
-          next: (res) =>  {
-            this.categoryControl.setValue(res);
+          next: (resCat) =>  {
+            this.categoryControl.setValue(resCat);
+            this.autoFnCategory.setValue(resCat);
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
 
         this.statusService.get(res.status.id).subscribe({
-          next: (res) =>  {
-            this.statusControl.setValue(res);
+          next: (resStatus) =>  {
+            this.statusControl.setValue(resStatus);
+            this.autoFnStatus.setValue(resStatus);
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
 
         this.projectService.get(res.project.id).subscribe({
-          next: (res) =>  {
-            this.projectControl.setValue(res);
+          next: (resProj) =>  {
+            this.projectControl.setValue(resProj);
+            this.autoFnProject.setValue(resProj);
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
 
 
       }
+
     })
   }
 
@@ -253,5 +271,25 @@ export class ActivityComponent implements OnInit {
     this.DefaultPageLayoutComponent.delete(id).subscribe();
   }
   
+  kanban(id:string){
+    this.router.navigate(['kanban', id]);
+  }
+
+  openDialog(id:string): void {
+
+    const dialogRef = this.dialog.open(ActivityReportComponent, {
+      data: {activity: id},
+      height: '50%',
+      width: '600px',
+      
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result !== undefined) {
+        console.log('closed')
+      }
+    });
+  }
 }
 

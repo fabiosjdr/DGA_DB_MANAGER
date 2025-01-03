@@ -1,0 +1,14 @@
+<app-default-page-layout 
+title="Meus dados" 
+path="user" 
+[pageForm]="meForm" 
+[showList]="false" 
+[disableSaveBtn]="!formValid"
+>
+    <section  form-page-body>
+        <app-default-user-layout (formInitialized)="onFormInitialized($event)" (formValid)="setFormValid($event)"> ></app-default-user-layout>
+    </section>
+
+
+</app-default-page-layout>
+

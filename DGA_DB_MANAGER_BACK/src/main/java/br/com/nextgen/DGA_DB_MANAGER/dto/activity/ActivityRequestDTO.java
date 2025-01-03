@@ -13,7 +13,6 @@ public record ActivityRequestDTO(
     @NonNull  BigInteger id_client,
     @NonNull  BigInteger id_category,
     @NonNull  BigInteger id_project,
-    @NonNull  BigInteger id_status,
               BigInteger id_user,
               BigInteger id_account
 ){}

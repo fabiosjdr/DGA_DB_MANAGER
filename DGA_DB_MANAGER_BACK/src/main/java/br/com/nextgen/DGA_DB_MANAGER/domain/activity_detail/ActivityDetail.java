@@ -1,6 +1,7 @@
 package br.com.nextgen.DGA_DB_MANAGER.domain.activity_detail;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity.Activity;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_stage.ActivityStage;
@@ -30,9 +31,14 @@ public class ActivityDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
-    private String title;
-    private String description;
-   
+    private String     title;
+    private String     description;
+    private String     priority;
+    private String     color;
+    private Integer    progress;
+    private LocalDateTime start_date;
+    private LocalDateTime due_date;
+    
     @OneToOne
     @JoinColumn(name = "id_activity") 
     private Activity activity;

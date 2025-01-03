@@ -1,31 +1,39 @@
-<header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">DGA Solutions</a>
+<main>
+    
 
-    <ul class="navbar-nav flex-row d-md-none">
-        <li class="nav-item text-nowrap">
-        <button class="nav-link px-3 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSearch" aria-controls="navbarSearch" aria-expanded="false" aria-label="Toggle search">
-            <svg class="bi"><use xlink:href="#search"/></svg>
-        </button>
-        </li>
-        <li class="nav-item text-nowrap">
-        <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <svg class="bi"><use xlink:href="#list"/></svg>
-        </button>
-        </li>
-    </ul>
+    <div class="container-fluid bg-cont ">
+        <section class="row flex-nowrap app-main ">
 
-    <div id="navbarSearch" class="navbar-search w-100 collapse">
-        <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search">
-    </div>
+            <div class="side-section col">
+                <app-sidebar-layout  sidebar-area></app-sidebar-layout>
+            </div>
+            <div class="main-section col-lg-7 p-0">
 
-</header>
-
-<div class="container-fluid bg-cont ">
-    <main class="row flex-nowrap app-main ">
-        <ng-content select="[sidebar-area]">
+                <header class="navbar sticky-top bg-dark flex-md-nowrap p-0 shadow py-4" >
+                    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="#">DGA Solutions</a>
             
-        </ng-content>
-        <app-sidebar-layout class="no-break" sidebar-area></app-sidebar-layout>
-        <ng-content class="" select="[main-area]"></ng-content>
-    </main>
-</div>
+                    <ul class="navbar-nav flex-row d-md-none">
+                        <li class="nav-item text-nowrap">
+                        <button class="nav-link px-3 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSearch" aria-controls="navbarSearch" aria-expanded="false" aria-label="Toggle search">
+                            <svg class="bi"><use xlink:href="#search"/></svg>
+                        </button>
+                        </li>
+                        <li class="nav-item text-nowrap">
+                        <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                            <svg class="bi"><use xlink:href="#list"/></svg>
+                        </button>
+                        </li>
+                    </ul>
+            
+                    <div id="navbarSearch" class="navbar-search w-100 collapse">
+                        <input class="form-control w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search">
+                    </div>
+            
+                </header>
+
+                <ng-content class="" select="[main-area]"></ng-content>
+            </div>
+
+        </section>
+    </div>
+</main>

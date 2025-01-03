@@ -24,4 +24,5 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
     private String name;
+    private Boolean timer;
 }

@@ -1,0 +1,140 @@
+<app-default-page-layout 
+title="Usuários" 
+path="user" 
+[pageForm]="userForm" 
+(setList)="setList($event)" 
+[disableSaveBtn]="!userForm.valid"
+>
+                   
+    <section form-page-body>
+
+        <form [formGroup]="userForm" class="ng-untouched ng-pristine ng-valid">
+            
+            <div class="row">
+
+                <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                    <mat-label>Nome</mat-label>
+                    <input formControlName="name"  matInput placeholder="">
+                    <mat-icon matSuffix>person_pin</mat-icon>
+                </mat-form-field>
+
+                
+                <mat-form-field appearance="outline" class="col-md-4 pr-1">
+                  <mat-label>Email</mat-label>
+                  <input formControlName="email"  matInput placeholder="">
+                  <mat-icon matSuffix>person_pin</mat-icon>
+                  <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+                    <span *ngIf="userForm.get('email')?.hasError('required')"  class="text-danger">O email é obrigatório.</span>
+                    <span *ngIf="userForm.get('email')?.hasError('email')"  class="text-danger">Por favor, insira um email válido.</span>
+                  </div>
+                </mat-form-field>
+
+               
+            </div>
+
+            <div class="row">
+
+                <mat-form-field appearance="outline"  class="col-md-4 pr-1">
+                  <mat-label>Tipo de Usuários</mat-label>
+                  <input type="text"
+                         placeholder="Selecione um tipo"
+                         aria-label="roles"
+                         matInput
+                         [formControl]="rolesControl"
+                         [matAutocomplete]="auto">
+  
+                  <mat-autocomplete  #auto="matAutocomplete" (optionSelected)='autoFnRoles.setValue($event.option.value)' [displayWith]="displayFn">
+                    @for (option of filteredOptionsRoles | async; track option) {
+                      <mat-option [value]="option">{{option.name}}</mat-option>
+                    }
+                  </mat-autocomplete>
+  
+                </mat-form-field>
+
+                <mat-form-field appearance="outline"  class="col-md-4 pr-1">
+                  <mat-label>Situação</mat-label>
+                  <select matNativeControl required formControlName="active">
+                    <option [value]="true">Ativo</option>
+                    <option [value]="false">Inativo</option>
+                  </select>
+                </mat-form-field>
+                
+                <div class="col-md-4 pr-1">
+                  <button class="btn btn-primary mt-1 p-2" (click)="showPasswordFields($event)">
+                    <i class="bi bi-lock me-2"></i>Alterar Senha
+                  </button>
+                </div>
+
+            </div>
+            
+            <div class="row">  
+               
+                <mat-form-field *ngIf="changePassword" appearance="outline" class="col-md-4 pr-1">
+                  <mat-label>Senha</mat-label>
+                  <input type="password" formControlName="password"  matInput placeholder="">
+                  <mat-icon matSuffix>person_pin</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field *ngIf="changePassword" appearance="outline" class="col-md-4 pr-1">
+                  <mat-label>Confirmar senha</mat-label>
+                  <input type="password" formControlName="confirm_password" matInput  placeholder="">
+                  <mat-icon matSuffix>person_pin</mat-icon>
+                </mat-form-field>
+                
+                <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+                  <span *ngIf="userForm.get('password')?.hasError('minlength')" class="text-danger">
+                    A senha deve ter no mínimo 6 caracteres.
+                  </span>
+                </div>
+                
+                <div *ngIf="userForm.hasError('passwordsMismatch') && userForm.get('confirm_password')?.touched">
+                  <span class="text-danger">As senhas não coincidem.</span>
+                </div>
+
+               
+            </div>
+
+            
+        </form>
+
+    </section>
+
+    <section page-list-body>
+
+        <table class="table table-striped table-sm">
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Email</th>
+                <th scope="col">Perfil</th>
+                <th scope="col">Status</th>
+                <th scope="col">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let user of userList">
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.roles.name }}</td>
+                <td ><div [ngClass]="{ 'btn btn-sm btn-success': user.active, 'btn btn-sm btn-warning': !user.active }">{{ user.active ? 'Ativo' : 'Inativo' }}</div></td>
+                <td>
+
+                    <button  title="editar" (click)="edit(user.id)"   class="btn btn-outline-primary m-1"   >
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button   title="excluir" (click)="delete(user.id)"  class="btn btn-outline-danger m-1" >
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                </td> 
+              </tr>
+            </tbody>
+        </table>
+
+     </section>
+  
+
+
+</app-default-page-layout>
+

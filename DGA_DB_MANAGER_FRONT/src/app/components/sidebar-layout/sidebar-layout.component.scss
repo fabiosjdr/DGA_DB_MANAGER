@@ -1,80 +1,39 @@
   /*
    * Sidebar
    */
-  
-  @media (min-width: 768px) {
-    .sidebar .offcanvas-lg {
-      position: -webkit-sticky;
-      position: sticky;
-      top: 48px;
+  @import "../../../../src/styles/variables.scss";
+
+
+
+  .scrollarea {
+    overflow-y: auto;
+  }
+
+  .my-sidebar{
+    
+    gap: 8px;
+    flex-grow: 1;
+    
+
+    span{
+      margin-right: 5px;
     }
-    .navbar-search {
-      display: block;
+
+    .nav{
+
+      a{
+          font-size: 16px;
+          color: $secondary-color;
+          text-align: start;
+          text-transform: capitalize;
+          margin: 2px 0;
+          padding: 17px;
+          
+      }
+  
+      a.active{
+        color: #fff;
+      }
     }
+    
   }
-  
-  .sidebar .nav-link {
-    font-size: .875rem;
-    font-weight: 500;
-  }
-  
-  .sidebar .nav-link.active {
-    color: #2470dc;
-  }
-  
-  .sidebar-heading {
-    font-size: .75rem;
-  }
-  
-
-.dropdown-toggle { outline: 0; }
-
-.btn-toggle {
-  padding: .25rem .5rem;
-  font-weight: 600;
-  color: var(--bs-emphasis-color);
-  background-color: transparent;
-}
-.btn-toggle:hover,
-.btn-toggle:focus {
-  color: rgba(var(--bs-emphasis-color-rgb), .85);
-  background-color: var(--bs-tertiary-bg);
-}
-
-.btn-toggle::before {
-  width: 1.25em;
-  line-height: 0;
-  content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
-  transition: transform .35s ease;
-  transform-origin: .5em 50%;
-}
-
-[data-bs-theme="dark"] .btn-toggle::before {
-  content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%28255,255,255,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
-}
-
-.btn-toggle[aria-expanded="true"] {
-  color: rgba(var(--bs-emphasis-color-rgb), .85);
-}
-.btn-toggle[aria-expanded="true"]::before {
-  transform: rotate(90deg);
-}
-
-.btn-toggle-nav a {
-  padding: .1875rem .5rem;
-  margin-top: .125rem;
-  margin-left: 1.25rem;
-}
-.btn-toggle-nav a:hover,
-.btn-toggle-nav a:focus {
-  background-color: var(--bs-tertiary-bg);
-}
-
-.scrollarea {
-  overflow-y: auto;
-}
-
-.my-sidebar{
-  border-right: 1px solid #ccc;
-  width: 280px;
-}

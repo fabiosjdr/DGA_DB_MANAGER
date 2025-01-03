@@ -41,7 +41,9 @@ public class ActivityStageController {
 
         List<ActivityStage> domain ;
 
-        if (body.id() == null) {
+        if(body.name() != null){
+            domain = this.repository.findByActivityIdAndName(body.id_activity(),body.name()).orElse(null);
+        }else if (body.id() == null) {
             domain = this.repository.findByActivityId(body.id_activity()).orElse(null);
         }else{
             domain = this.repository.findByActivityIdAndId(body.id_activity(),body.id()).orElse(null);
@@ -80,8 +82,14 @@ public class ActivityStageController {
         if(domain != null){
 
             domain.setActivity(activity);
-            domain.setName(body.name());
-            domain.setTimer(body.timer());
+
+            if(body.name() != null){
+              domain.setName(body.name());
+            }
+
+            if(body.timer() != null){
+                domain.setTimer(body.timer());
+            }
 
             this.repository.save(domain);
 

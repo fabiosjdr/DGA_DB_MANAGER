@@ -7,6 +7,7 @@ import { DefaultPageService } from '../../services/default-page.service';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { CommonModule, DatePipe } from '@angular/common';
 
 interface PageSearchForm {
   search : FormControl,
@@ -19,7 +20,8 @@ interface PageSearchForm {
   imports: [
     ContainerGeneralComponent,
     ReactiveFormsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    CommonModule
   ],
   providers: [DefaultPageService],
   templateUrl: './default-page-layout.component.html',
@@ -33,6 +35,8 @@ export class DefaultPageLayoutComponent {
   @Input() pageServiceOptional : any = null;
   @Input() path                : string = "";
   @Input() disableSaveBtn      : boolean = true;
+  @Input() showList            : boolean = true;
+
   @Output() setList = new EventEmitter();
  
   pageSearchForm! : FormGroup<PageSearchForm> 
@@ -41,6 +45,7 @@ export class DefaultPageLayoutComponent {
   pageSize        : number = 5;
   pageLength      : number = 0;
   page            : number = 0;
+  
 
   constructor(private router:Router, private pageService:DefaultPageService,  private toastService: ToastrService){
     
@@ -60,7 +65,9 @@ export class DefaultPageLayoutComponent {
       this.setPageService(this.pageServiceOptional);
     }
 
-    this.search();
+    if(this.showList){
+      this.search();
+    }
   }
 
   triggerSubmit(){ 
@@ -134,7 +141,7 @@ export class DefaultPageLayoutComponent {
   }
 
   submit(){ 
-   
+    console.log(this.pageForm.value);
     this.pageService.save(this.pageForm.value).subscribe({
       next: () =>  {
          this.toastService.success("Dados salvos com sucesso!"),
@@ -212,6 +219,48 @@ export class DefaultPageLayoutComponent {
     this.page     = event.pageIndex;
     this.pageSize = event.pageSize;
     this.search();
+  }
+
+  validateDate(e:any,type:string,field:string,formControl:FormControl){
+    
+    const datePipe      = new DatePipe('pt-BR');
+   
+    if(type == 'hour'){
+      var dataFormatada   = this.pageForm.get(field)?.value;
+      dataFormatada       = dataFormatada != '' ? datePipe.transform(dataFormatada, `yyyy-MM-dd ${e.target.value}:00`) : datePipe.transform( new Date(), `yyyy-MM-dd ${e.target.value}:00`);
+      console.log(dataFormatada);
+      if(this.checkDate(dataFormatada)){
+        this.pageForm.patchValue({[field]:dataFormatada});
+      }else{
+        alert('hora invalida');
+        e.target.value = null;
+      }
+
+    }else{
+      const hour          = formControl.value != null && formControl.value != '' ? formControl.value.slice(0,2) + ':' + formControl.value.slice(2) : '00:00:00';
+      const dataFormatada = datePipe.transform(e.target.value, `yyyy-MM-dd ${hour}`)
+
+      if(this.checkDate(dataFormatada)){
+        this.pageForm.patchValue({[field]:dataFormatada});
+      }else{
+        alert('data invalida');
+        e.target.value = null;
+      }
+      this.pageForm.patchValue({[field]:dataFormatada});
+      
+    }
+    console.log(this.pageForm.value)
+  }
+
+  checkDate(dateString: string|null): boolean {
+
+    if(dateString == null){
+      return false;
+    }
+    const date = new Date(dateString);
+
+    // Verifica se a data é válida
+    return !isNaN(date.getTime()); // `getTime()` retorna NaN para datas inválidas
   }
   
 }

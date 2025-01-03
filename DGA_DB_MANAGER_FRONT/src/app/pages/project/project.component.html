@@ -10,10 +10,10 @@
              <section form-page-body>
             
                 <form [formGroup]="projectForm" class="ng-untouched ng-pristine ng-valid">
-                    {{projectForm.value.id_client?.id}}
+                    <!-- {{projectForm.value.id_client?.id}} -->
                     <div class="row">
                         <!-- campos do formulario-->
-                        <mat-form-field appearance="outline" class="col-md-6 pr-1">
+                        <!-- <mat-form-field appearance="outline" class="col-md-6 pr-1">
                             <mat-label>Início</mat-label>
                             <input formControlName="start_date"  matInput placeholder="">
                             <mat-icon matSuffix>person_pin</mat-icon>
@@ -23,7 +23,42 @@
                             <mat-label>Fim</mat-label>
                             <input formControlName="end_date"  matInput placeholder="">
                             <mat-icon matSuffix>person_pin</mat-icon>
-                        </mat-form-field>
+                        </mat-form-field> -->
+
+                        <div class="col-md-6">
+                          <div class="d-flex align-items-center">
+                           
+                            <mat-form-field appearance="outline" class="me-1 col">
+                              <mat-label>Início</mat-label>
+                              <input id="start_date" matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','start_date',startHourControl)" [matDatepicker]="pickerStart" mask="00/00/0000"  placeholder="00/00/0000">
+                              <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
+                              <mat-datepicker #pickerStart></mat-datepicker>
+                            </mat-form-field>
+                      
+                            <mat-form-field appearance="outline">
+                              <mat-label>Hora Início</mat-label>
+                              <input [formControl]="startHourControl" (change)="DefaultPageLayoutComponent.validateDate($event,'hour','start_date',startHourControl)" matInput placeholder="00:00" mask="00:00" >
+                            </mat-form-field>
+                           
+                          </div>
+                        </div>
+
+                        <div class="col-md-6">
+                          <div class="d-flex align-items-center">
+                           
+                            <mat-form-field appearance="outline" class="me-1 col">
+                              <mat-label>Fim</mat-label>
+                              <input matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','end_date',endHourControl)" [matDatepicker]="pickerEnd"  mask="00/00/0000"  placeholder="00/00/0000">
+                              <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
+                              <mat-datepicker #pickerEnd></mat-datepicker>
+                            </mat-form-field>
+                      
+                            <mat-form-field appearance="outline">
+                              <mat-label>Hora Fim</mat-label>
+                              <input [formControl]="endHourControl" (change)="DefaultPageLayoutComponent.validateDate($event,'hour','end_date',endHourControl)" matInput placeholder="" placeholder="00:00" mask="00:00">
+                            </mat-form-field>
+                          </div>
+                        </div>
 
                     </div>
 
@@ -92,8 +127,13 @@
                         <td>{{ list.start_date | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                         <td>{{ list.end_date | date:'dd/MM/yyyy HH:mm:ss' }}</td>
                         <td>
-                            <input type="button" (click)="edit(list.id)"    class="btn btn-outline-primary" value="editar">
-                            <input type="button" (click)="delete(list.id)"  class="btn btn-outline-danger"  value="excluir">
+
+                            <button  title="editar" (click)="edit(list.id)"   class="btn btn-outline-primary m-1"   >
+                              <i class="bi bi-pencil-fill"></i>
+                            </button>
+                            <button   title="excluir" (click)="delete(list.id)"  class="btn btn-outline-danger m-1" >
+                              <i class="bi bi-trash-fill"></i>
+                            </button>
                         </td> 
                       </tr>
                     </tbody>

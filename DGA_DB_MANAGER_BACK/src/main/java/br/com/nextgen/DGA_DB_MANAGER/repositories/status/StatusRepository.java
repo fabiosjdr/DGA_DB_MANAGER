@@ -14,9 +14,11 @@ import br.com.nextgen.DGA_DB_MANAGER.domain.status.Status;
 
 
 public interface StatusRepository extends JpaRepository<Status,String> {
+
     Optional<Status> findByName(String name);
 
     @Query("SELECT s FROM status s WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :text, '%'))")
     Page<Status> findByNameContainingIgnoreCase(@Param("text") String text, Pageable pageable);
+    
 }
 

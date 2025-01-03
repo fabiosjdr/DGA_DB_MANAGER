@@ -13,6 +13,8 @@ import { DefaultPageService } from '../../services/default-page.service';
 import { ToastrService } from 'ngx-toastr';
 import { ProjectForm } from '../../models/project.interface';
 import { Client } from '../../models/client.interface';
+import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 
 @Component({
@@ -26,9 +28,14 @@ import { Client } from '../../models/client.interface';
     MatDatepickerModule,
     MatAutocompleteModule,
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
+    NgxMaskDirective
   ],
-  providers: [DefaultPageService],
+  providers: [
+    //DefaultPageService,
+    provideNgxMask(),
+    provideNativeDateAdapter(),
+  ],
   templateUrl: './project.component.html',
   styleUrl: './project.component.scss'
 })
@@ -44,6 +51,9 @@ export class ProjectComponent implements OnInit {
 
   options: Client[] = [];
   filteredOptions!: Observable<any>;
+
+  startHourControl = new FormControl('');
+  endHourControl   = new FormControl('');
 
   constructor( private pageService:DefaultPageService,private clientService:DefaultPageService, private toastService: ToastrService){
 

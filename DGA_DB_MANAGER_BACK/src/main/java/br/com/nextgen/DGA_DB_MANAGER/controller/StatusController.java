@@ -44,7 +44,7 @@ public class StatusController {
         }
 
         Page<StatusResponseDTO> response = status.map(stat -> 
-            new StatusResponseDTO(stat.getId(),stat.getName())
+            new StatusResponseDTO(stat.getId(),stat.getName(),stat.getTimer())
         );
     
         return ResponseEntity.ok(response);
@@ -78,7 +78,7 @@ public class StatusController {
 
             Status  newObj = new Status();
                       newObj.setName(body.name());
-
+                      newObj.setTimer(body.timer());  
                       this.repository.save(newObj);
 
                     return ResponseEntity.ok(newObj);
@@ -97,6 +97,7 @@ public class StatusController {
         if(domain != null){
 
             domain.setName(body.name());
+            domain.setTimer(body.timer());
             this.repository.save(domain);
 
             return ResponseEntity.ok(domain);

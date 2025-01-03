@@ -9,7 +9,13 @@ public record ActivityDetailRequestDTO(
               BigInteger    id, 
     @NotNull  BigInteger    id_activity,
               BigInteger    id_stage,
+              BigInteger    old_id_stage,
               String        title, 
               BigInteger    id_user,
-              String        description
+              String        description,
+              String        priority,
+              String        color,
+              String        start_date,
+              String        due_date,
+              Integer       progress
 ){}
