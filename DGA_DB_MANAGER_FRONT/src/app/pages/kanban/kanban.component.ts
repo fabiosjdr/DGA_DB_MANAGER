@@ -34,11 +34,11 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   
   id!: string;
  
-  addNewColumn             = true;
-  allowColumnRemove        = true;
+  addNewColumn             = false;
+  allowColumnRemove        = false;
   collapsible              = false;
   addNewButton             = true;
-  editable                 = true;
+  editable                 = false;
   columnActions            = true;
   columnEditMode           = 'menu';
   columnFooter             = true;
@@ -57,7 +57,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
   
   columns   : { id: number; label : string; dataField: string,func:any}[] = [];
-  dataSource: { id: number; status: string; text     : string}[] = [];
+  dataSource: { id: number; status: string; text : string}[] = [];
   users     : { id: number; name  : string}[] = [];
   
   // users = [
@@ -73,12 +73,13 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   private userLoaded    = false;
   private columnsLoaded = false;
   private dataLoaded    = false;
+  private taskCanBeAdded = true;
 
   constructor(
     private route  : ActivatedRoute,
     private stage  : StagesService, 
     private user   : UserService, 
-    private detail : DetailsService, 
+    private detailService : DetailsService, 
     private toastService: ToastrService,
     private renderer: Renderer2
   ) {}
@@ -91,15 +92,16 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
     this.id = this.route.snapshot.paramMap.get('id') || '';
 
-    this.clickListener = this.renderer.listen('document', 'click', (event: Event) => {
+    //descomentar caso deseje habilitar a mudança de contabilização do timer no kanaban ao clicar no icone
+    // this.clickListener = this.renderer.listen('document', 'click', (event: Event) => {
 
-      const target = event.target as HTMLElement;
+    //   const target = event.target as HTMLElement;
      
-      if (target.classList.contains('columnTimer')) {
-         this.toggleTimer(target);
-      }
+    //   if (target.classList.contains('columnTimer')) {
+    //      this.toggleTimer(target);
+    //   }
 
-    });
+    // });
   }
 
   ngOnDestroy() {
@@ -189,7 +191,9 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
   loadKanbanData() : void{
 
-    this.detail.get(this.id).subscribe({
+    this.dataLoaded = false;
+    
+    this.detailService.get(this.id).subscribe({
       next: (res) => {
        // console.log(res);
         this.dataSource = res.map((item: Detail) => ({
@@ -200,7 +204,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
           priority   : item.priority,
           color      : item.color,
           progress   : item.progress,
-          userId     : item.user.id,
+          userId     : item.user?.id,
           startDate  : item.start_date,
           dueDate    : item.due_date
         }));
@@ -217,6 +221,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   }
 
   onKanbanChange(event: any): void {
+    //console.log('change');
     const { detail } = event;
     //console.log(this.kanban);
   }
@@ -276,10 +281,38 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
     return payload[0];
   }
+  
+  onClosing(event: any){
+   // this.kanban?.nativeElement.endEdit();
+   // event.preventDefault();
+
+  }
+
+  
+
+  onTaskBeforeAdd = (event: any) => {
+
+    // event.preventDefault();
+
+    // this.taskCanBeAdded = true;
+
+    // const detail = event.detail;
+    
+    // if(!detail.value.userId){
+    //   this.taskCanBeAdded = false;
+    //   alert('Por favor, atribua um usuário a tarefa!');
+    // }else{
+    //   this.kanban?.nativeElement.close();
+    // }
+
+  }
 
   onTaskAdd(event: any){
-    const detail = event.detail;
-    this.saveTask(detail);
+   
+      const detail = event.detail;
+      this.saveTask(detail);
+   
+    
   }
 
   onTaskUpdate(event:any) {
@@ -291,7 +324,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
     const detail = event.detail,
     id = detail.id;
     
-    this.detail.delete(id).subscribe({
+    this.detailService.delete(id).subscribe({
       next: () =>  {
          this.toastService.success("Dados removidos com sucesso!");
       },
@@ -301,12 +334,20 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   }
 
   saveTask(detail:any): void{
-    console.log(detail);
+    //console.log(detail);
     const payload = this.prepareTasKData(detail);
-    console.log(payload);
-    this.detail.save(payload).subscribe({
-      next: () =>  {
-         this.toastService.success("Dados salvos com sucesso!");
+    
+    this.detailService.save(payload).subscribe({
+      next: (res) =>  {
+
+        if (res && res.id) {
+          detail.value.id = res.id; 
+          console.log(detail);
+          console.log(this.dataSource);
+        }
+       
+        this.toastService.success("Dados salvos com sucesso!");
+         
       },
       error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
     });
@@ -368,6 +409,11 @@ export class KanbanComponent implements AfterViewInit, OnInit{
             case 'userId':
 
               editors[key].style.display = 'block';
+              // console.log( editors[key]);
+              // if (this.users.length > 0) {
+              //   editors[key].value = String(this.users[0].id);  // Set the first user as the selected value
+              // }
+
             break;
             case 'emptyTags':
             case 'tags':
@@ -393,10 +439,10 @@ export class KanbanComponent implements AfterViewInit, OnInit{
     const span = document.createElement('span');
 
     const icon = (data.timer) ? "bi-clock-fill" : "bi-clock";
-
+    const title = (data.timer) ? "Controle de tempo ativo" : "Controle de tempo inativo";
     span.innerHTML = `${data.label} <i id="${data.id}" timer="${data.timer}" class="bi ${icon} columnTimer"></i>`;
     //span.classList.add('columnTimer');
-    span.title = 'Ativar controle de tempo';
+    span.title = title;
     span.id = data.id;
 
 

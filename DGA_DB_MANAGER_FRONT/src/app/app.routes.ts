@@ -16,7 +16,7 @@ export const routes: Routes = [
     {
         path: "",
         pathMatch: 'full',
-        redirectTo: 'activity',
+        redirectTo: 'sprint',
     },
     
     {
@@ -53,7 +53,7 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
-        path: "activity",
+        path: "sprint",
         component: ActivityComponent,
         canActivate: [AuthGuard],
         

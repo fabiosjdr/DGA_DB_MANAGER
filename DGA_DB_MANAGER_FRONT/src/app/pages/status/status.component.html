@@ -16,6 +16,14 @@ title="Status"
                     <input formControlName="name"  matInput placeholder="">
                     <mat-icon matSuffix>person_pin</mat-icon>
                 </mat-form-field>
+
+                <mat-form-field appearance="outline"  class="col-md-4 pr-1">
+                  <mat-label>Contabilizar Tempo</mat-label>
+                  <select matNativeControl required formControlName="timer">
+                    <option [value]="true">Sim</option>
+                    <option [value]="false">Não</option>
+                  </select>
+                </mat-form-field>
                 
             </div>
             
@@ -30,6 +38,7 @@ title="Status"
               <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Nome</th>
+                <th scope="col">Contabilizar o tempo</th>
                 <th scope="col">Ações</th>
               </tr>
             </thead>
@@ -37,9 +46,17 @@ title="Status"
               <tr *ngFor="let client of statusList">
                 <td>{{ client.id }}</td>
                 <td>{{ client.name }}</td>
+                <td>{{ BooleanToTextPipe(client.timer) }}</td>
                 <td>
-                    <input type="button" (click)="edit(client.id)"    class="btn btn-outline-primary" value="editar">
-                    <input type="button" (click)="delete(client.id)"  class="btn btn-outline-danger"  value="excluir">
+              
+                    <button  title="editar" (click)="edit(client.id)"   class="btn btn-outline-primary m-1"   >
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button   title="excluir" (click)="delete(client.id)"  class="btn btn-outline-danger m-1" >
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+
+                    
                 </td> 
               </tr>
             </tbody>

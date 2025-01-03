@@ -100,15 +100,26 @@ public class ActivityDetailController {
 
         //Account account = authService.getAccount();
 
-        Activity        activity   = activityRepository.findById(body.id_activity()).orElseThrow(() -> new RuntimeException("activity not found"));
-        ActivityStage   stage      = activityStageRepository.findById(body.id_stage()).orElseThrow(() -> new RuntimeException("stage not found"));
+        Activity        activity = activityRepository.findById(body.id_activity()).orElseThrow(() -> new RuntimeException("activity not found"));
+        ActivityStage   stage    = activityStageRepository.findById(body.id_stage()).orElseThrow(() -> new RuntimeException("stage not found"));
+
+        User            user     = null;
+        if(body.id_user() != null){
+            user     = userRepository.findById(body.id_user()).orElseThrow(() -> new RuntimeException("stage not found"));
+        }
 
         ActivityDetail  newObj = new ActivityDetail();
                         newObj.setActivity(activity);
                         newObj.setTitle(body.title());
                         newObj.setDescription(body.description());
-                        newObj.setUser(authUser);
+                        
+                        if(user != null){
+                            newObj.setUser(user);
+                        }
+
                         newObj.setStage(stage);
+
+        
         
         this.repository.save(newObj);
 
@@ -134,14 +145,22 @@ public class ActivityDetailController {
         ActivityDetail  domain   = this.repository.findById(body.id()).orElse(null);
         Activity        activity = activityRepository.findById(body.id_activity()).orElseThrow(() -> new RuntimeException("activity not found"));
         ActivityStage   stage    = activityStageRepository.findById(body.id_stage()).orElseThrow(() -> new RuntimeException("stage not found"));
-        User            user     = userRepository.findById(body.id_user()).orElseThrow(() -> new RuntimeException("stage not found"));
+
+        User   user     = null;
+        if(body.id_user() != null){
+               user     = userRepository.findById(body.id_user()).orElseThrow(() -> new RuntimeException("stage not found"));
+        }
         
         if(domain != null){
 
             domain.setActivity(activity);
             domain.setTitle(body.title());
             domain.setDescription(body.description());
-            domain.setUser(user);
+
+            if(user != null){
+                domain.setUser(user);
+            }
+
             domain.setStage(stage);
             domain.setPriority(body.priority());
             domain.setColor(body.color());

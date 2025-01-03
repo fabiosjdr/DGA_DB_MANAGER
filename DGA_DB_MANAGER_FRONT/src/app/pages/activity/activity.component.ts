@@ -103,7 +103,6 @@ export class ActivityComponent implements OnInit {
       id_category: new FormControl("",[Validators.required]),
       id_client  : new FormControl("",[Validators.required]),
       id_project : new FormControl("",[Validators.required]),
-      id_status  : new FormControl("",[Validators.required]),
       start_date : new FormControl("",[Validators.required]),
       end_date   : new FormControl("",[Validators.required]),
       id_account : new FormControl(1,[Validators.required])

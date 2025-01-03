@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.nextgen.DGA_DB_MANAGER.domain.account.Account;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity.Activity;
+import br.com.nextgen.DGA_DB_MANAGER.domain.activity_stage.ActivityStage;
 import br.com.nextgen.DGA_DB_MANAGER.domain.category.Category;
 import br.com.nextgen.DGA_DB_MANAGER.domain.client.Client;
 import br.com.nextgen.DGA_DB_MANAGER.domain.project.Project;
@@ -31,6 +33,7 @@ import br.com.nextgen.DGA_DB_MANAGER.domain.user.User;
 import br.com.nextgen.DGA_DB_MANAGER.dto.activity.ActivityRequestDTO;
 import br.com.nextgen.DGA_DB_MANAGER.dto.activity.ActivityResponseDTO;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity.ActivityRepository;
+import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_stage.ActivityStageRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.category.CategoryRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.client.ClientRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.project.ProjectRepository;
@@ -48,8 +51,9 @@ public class ActivityController{
     private final CategoryRepository  categoryRepository;
     private final ProjectRepository   projectRepository;
     private final StatusRepository    statusRepository;
+    private final ActivityStageRepository stageRepository;
+    
     private final AuthService         authService;
-
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @GetMapping("/search")
@@ -73,7 +77,7 @@ public class ActivityController{
                 activitie.getClient(),
                 activitie.getCategory(),
                 activitie.getProject(),
-                activitie.getStatus(),
+               // activitie.getStatus(),
                 activitie.getStart_date(),
                 activitie.getEnd_date(),
                 activitie.getUser(),
@@ -102,7 +106,7 @@ public class ActivityController{
         return ResponseEntity.ok(domain);
     }
     
-
+    @Transactional
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Validated ActivityRequestDTO body){
 
@@ -119,7 +123,7 @@ public class ActivityController{
         Client   client   = clientRepository.findById(body.id_client().toString()).orElseThrow(() -> new RuntimeException("Client not found"));
         Category category = categoryRepository.findById(body.id_category().toString()).orElseThrow(() -> new RuntimeException("Category not found"));
         Project  project  = projectRepository.findById(body.id_project().toString()).orElseThrow(() -> new RuntimeException("Project not found"));
-        Status   status   = statusRepository.findById(body.id_project().toString()).orElseThrow(() -> new RuntimeException("Status not found"));
+        //Status   status   = statusRepository.findById(body.id_status().toString()).orElseThrow(() -> new RuntimeException("Status not found"));
         
         LocalDateTime startDate   = (body.end_date() != null)   ?  LocalDateTime.parse(body.start_date(), formatter)   : null;
         LocalDateTime endDate     = (body.end_date() != null)   ?  LocalDateTime.parse(body.end_date(), formatter)   : null;
@@ -131,13 +135,35 @@ public class ActivityController{
                   newObj.setCategory(category);
                   newObj.setClient(client);
                   newObj.setProject(project);
-                  newObj.setStatus(status);
+                  //newObj.setStatus(status);
                   newObj.setUser(authUser);
                   newObj.setAccount(account);
         
         this.repository.save(newObj);
+
+
+        this.createDetail(newObj);
+
         return ResponseEntity.ok(newObj);
      
+    }
+
+    private void createDetail(Activity activity){
+        
+        List<Status> statuses = statusRepository.findAll();
+
+        for (Status status : statuses) {
+
+            ActivityStage  activeStage = new ActivityStage();
+            
+            activeStage.setActivity(activity);
+            activeStage.setName(status.getName());
+            activeStage.setTimer(status.getTimer());
+
+            this.stageRepository.save(activeStage);
+            
+        }
+
     }
 
     @PutMapping
@@ -153,7 +179,7 @@ public class ActivityController{
         Client   client   = clientRepository.findById(body.id_client().toString()).orElseThrow(() -> new RuntimeException("Client not found"));
         Category category = categoryRepository.findById(body.id_category().toString()).orElseThrow(() -> new RuntimeException("Category not found"));
         Project  project  = projectRepository.findById(body.id_project().toString()).orElseThrow(() -> new RuntimeException("Project not found"));
-        Status   status   = statusRepository.findById(body.id_project().toString()).orElseThrow(() -> new RuntimeException("Status not found"));
+        //Status   status   = statusRepository.findById(body.id_project().toString()).orElseThrow(() -> new RuntimeException("Status not found"));
 
         Activity domain = this.repository.findById(body.id()).orElse(null);
 
@@ -169,7 +195,7 @@ public class ActivityController{
             domain.setCategory(category);
             domain.setClient(client);
             domain.setProject(project);
-            domain.setStatus(status);
+          //  domain.setStatus(status);
             domain.setUser(authUser);
 
             this.repository.save(domain);

@@ -9,5 +9,6 @@ public record MenuRequestDTO(
               BigInteger id,
     @NotEmpty String     name, 
     @NotEmpty String     path, 
-              Boolean    active
+              Boolean    active,
+              String     icon
 ) {}

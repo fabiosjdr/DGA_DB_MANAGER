@@ -1,6 +1,6 @@
 <app-container-general> 
 
-    <div class="d-flex d justify-content-center col-md-8 col-lg-10 px-md-4" main-area>
+    <div class="d-flex d justify-content-center col-md-10 col-lg-12 px-md-4" main-area>
         <div class=" col-10 pt-3 pb-2 mb-3 border-bottom">
 
             <div class="card card-user">
@@ -16,7 +16,7 @@
                         [dialogRendered]="dialogRendered"
                         [taskActions]="taskActions"
                         [columnHeaderTemplate]="headerHtml"
-
+                    
                         [messages]="messages"
                         [addNewColumn]="addNewColumn" 
                         [allowColumnRemove]="allowColumnRemove" 
@@ -42,11 +42,14 @@
                         (columnAdd)="onColumnAdd($event)"
                         (columnUpdate)="onColumnUpdate($event)"
                         (columnRemove)="onColumnRemove($event)"
+                        (taskBeforeAdd)="onTaskBeforeAdd($event)"
                         (taskAdd)="onTaskAdd($event)"
                         (taskUpdate)="onTaskUpdate($event)"
                         (taskRemove)="onTaskRemove($event)"
                         (columnReorder)="onColumnReorder($event)"
                         (dragEnd)="onDragEnd($event)"
+                        (closing)="onClosing($event)"
+                        
                         >
                     </smart-kanban>
 

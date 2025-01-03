@@ -227,8 +227,8 @@ export class DefaultPageLayoutComponent {
    
     if(type == 'hour'){
       var dataFormatada   = this.pageForm.get(field)?.value;
-      dataFormatada       = dataFormatada != '' ? datePipe.transform(dataFormatada, `yyyy-MM-dd ${e.target.value}`) : datePipe.transform( new Date(), `yyyy-MM-dd ${e.target.value}`);
-      
+      dataFormatada       = dataFormatada != '' ? datePipe.transform(dataFormatada, `yyyy-MM-dd ${e.target.value}:00`) : datePipe.transform( new Date(), `yyyy-MM-dd ${e.target.value}:00`);
+      console.log(dataFormatada);
       if(this.checkDate(dataFormatada)){
         this.pageForm.patchValue({[field]:dataFormatada});
       }else{
@@ -237,7 +237,7 @@ export class DefaultPageLayoutComponent {
       }
 
     }else{
-      const hour          = formControl.value != null && formControl.value != '' ? formControl.value.slice(0,2) + ':' + formControl.value.slice(2) : '00:00';
+      const hour          = formControl.value != null && formControl.value != '' ? formControl.value.slice(0,2) + ':' + formControl.value.slice(2) : '00:00:00';
       const dataFormatada = datePipe.transform(e.target.value, `yyyy-MM-dd ${hour}`)
 
       if(this.checkDate(dataFormatada)){

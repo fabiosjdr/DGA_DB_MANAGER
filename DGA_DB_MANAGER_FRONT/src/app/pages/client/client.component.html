@@ -77,8 +77,15 @@ path="client"
                 <td>{{ client.telephone }}</td>
                 <td>{{ client.hours }}</td>
                 <td>
-                    <input type="button" (click)="edit(client.id)"    class="btn btn-outline-primary" value="editar">
-                    <input type="button" (click)="delete(client.id)"  class="btn btn-outline-danger"  value="excluir">
+                    <!-- <input type="button" (click)="edit(client.id)"    class="btn btn-outline-primary" value="editar">
+                    <input type="button" (click)="delete(client.id)"  class="btn btn-outline-danger"  value="excluir"> -->
+
+                     <button  title="editar" (click)="edit(client.id)"   class="btn btn-outline-primary m-1"   >
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button   title="excluir" (click)="delete(client.id)"  class="btn btn-outline-danger m-1" >
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
                 </td> 
               </tr>
             </tbody>

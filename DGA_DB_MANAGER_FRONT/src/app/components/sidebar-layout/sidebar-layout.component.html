@@ -1,10 +1,10 @@
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary my-sidebar">
+<div class="d-flex flex-column flex-shrink-0 p-3  my-sidebar">
 
     <div class="d-flex justify-content-center align-items-center">
       <div class="dropdown">
         <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
           <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-          <strong>mdo</strong>
+          <strong *ngIf="me">Ola: {{ me.name}}</strong>
         </a>
         <ul class="dropdown-menu text-small shadow">
           <!-- <li><a class="dropdown-item" href="#">New project...</a></li>
@@ -23,9 +23,7 @@
       <li *ngFor="let menu of menuList">
         <!--[attr.aria-current]="menu.name"-->
         <a [href]="'/' +menu.path" class="nav-link " (click)="onMenuClick(menu.name)" [ngClass]="{ 'active': selectedMenu === menu.name }" >
-          <svg class="bi pe-none me-2" width="16" height="16">
-            <use [attr.xlink:href]="menu.name"></use>
-          </svg>
+          <span [innerHTML]="menu.icon"></span>
           {{ capitalizeWords(menu.name) }}
         </a>
       </li>

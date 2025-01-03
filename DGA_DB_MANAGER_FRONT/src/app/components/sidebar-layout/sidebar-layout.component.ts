@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { Menu } from '../../models/menu.interface';
 import { CommonModule } from '@angular/common';
+import { Users } from '../../models/users.interface';
 
 @Component({
   selector: 'app-sidebar-layout',
@@ -18,6 +19,7 @@ export class SidebarLayoutComponent implements OnInit,AfterViewInit {
   
   menuList    : Menu[] = [];
   selectedMenu: string | null = sessionStorage.getItem('selectedMenu');
+  me! : Users;
 
   constructor(private router:Router, private loginService: LoginService, private userService:UserService, private toastService: ToastrService){
     
@@ -35,7 +37,7 @@ export class SidebarLayoutComponent implements OnInit,AfterViewInit {
       next: (res) =>  {
 
         if(res != null){
-
+          this.me = res;
           res.roles.permissions.map((value:any) => {
            
             this.menuList.push(value.menu)

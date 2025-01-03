@@ -7,7 +7,6 @@ import br.com.nextgen.DGA_DB_MANAGER.domain.account.Account;
 import br.com.nextgen.DGA_DB_MANAGER.domain.category.Category;
 import br.com.nextgen.DGA_DB_MANAGER.domain.client.Client;
 import br.com.nextgen.DGA_DB_MANAGER.domain.project.Project;
-import br.com.nextgen.DGA_DB_MANAGER.domain.status.Status;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user.User;
 
 public record ActivityResponseDTO(
@@ -16,7 +15,6 @@ public record ActivityResponseDTO(
     Client         client, 
     Category       category,
     Project        project, 
-    Status         status,
     LocalDateTime  start_date, 
     LocalDateTime  end_date,
     User           user,
@@ -26,7 +24,6 @@ public record ActivityResponseDTO(
     public ActivityResponseDTO() {
         this(
             null,
-            null, 
             null, 
             null,
             null,

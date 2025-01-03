@@ -33,7 +33,8 @@ export class StatusComponent {
 
     this.statusForm = new FormGroup({
       id         : new FormControl<string | null>(null),
-      name       : new FormControl("",[Validators.required])
+      name       : new FormControl("",[Validators.required]),
+      timer      : new FormControl(false)
     });
 
   }
@@ -48,5 +49,10 @@ export class StatusComponent {
  
   delete(id:string){
     this.DefaultPageLayoutComponent.delete(id).subscribe();
+  }
+
+  BooleanToTextPipe(timer : Boolean) {
+    
+      return timer ? 'Sim' : 'Não';
   }
 }

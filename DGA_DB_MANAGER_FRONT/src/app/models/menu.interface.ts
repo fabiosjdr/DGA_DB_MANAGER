@@ -3,5 +3,6 @@ export interface Menu {
     id         : bigint,
     name       : string,
     path       : string,
-    active     : boolean
+    active     : boolean,
+    icon       : string
 }

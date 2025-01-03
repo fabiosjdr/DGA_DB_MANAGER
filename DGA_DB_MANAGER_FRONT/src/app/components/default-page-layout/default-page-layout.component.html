@@ -1,6 +1,6 @@
 <app-container-general>
 
-    <div class="d-flex d justify-content-center col-md-8 col-lg-10 px-md-4" main-area>
+    <div class="d-flex d justify-content-center col-md-10 col-lg-12 px-md-4" main-area>
         <div class=" col-10 pt-3 pb-2 mb-3 border-bottom">
 
             <div class="card card-user">
@@ -48,12 +48,18 @@
                         
                         <div class="d-flex flex-row bd-highlight  align-items-center">
 
-                            <div class="flex-grow-1 p-2 ">{{title}} </div>
+                            <div class="flex-grow-1  ">{{title}} </div>
 
-                            <div class="mr-4 p-2">
+                            <div class="mr-4 ">
                                 <form  [formGroup]="pageSearchForm" (submit)="search()" class="d-flex">
-                                    <input class="form-control me-2" formControlName="search" type="search" placeholder="Buscar" aria-label="Buscar">
-                                    <button class="btn btn-outline-success" type="submit">Buscar</button>
+                                   
+                                    <div class="input-group ">
+                                        <input class="form-control " formControlName="search" type="search" placeholder="Buscar" aria-label="Buscar">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-dark" type="submit">Buscar</button>
+                                        </div>
+                                    </div>
+
                                 </form>
                             </div>
                         </div>

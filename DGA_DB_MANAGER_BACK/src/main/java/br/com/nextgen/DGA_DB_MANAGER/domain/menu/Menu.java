@@ -26,5 +26,6 @@ public class Menu {
     private String     name;
     private String     path;
     private Boolean    active;
+    private String     icon;
    
 }

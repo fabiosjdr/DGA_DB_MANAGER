@@ -7,7 +7,6 @@ import br.com.nextgen.DGA_DB_MANAGER.domain.account.Account;
 import br.com.nextgen.DGA_DB_MANAGER.domain.category.Category;
 import br.com.nextgen.DGA_DB_MANAGER.domain.client.Client;
 import br.com.nextgen.DGA_DB_MANAGER.domain.project.Project;
-import br.com.nextgen.DGA_DB_MANAGER.domain.status.Status;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -54,9 +53,9 @@ public class Activity {
     @JoinColumn(name = "id_project")
     private Project project;
 
-    @ManyToOne
-    @JoinColumn(name = "id_status")
-    private Status status;
+    // @ManyToOne
+    // @JoinColumn(name = "id_status")
+    // private Status status;
 
     @ManyToOne
     @JoinColumn(name = "id_user") 

@@ -60,7 +60,9 @@ path="user"
                 </mat-form-field>
                 
                 <div class="col-md-4 pr-1">
-                  <button mat-raised-button (click)="showPasswordFields($event)">Alterar Senha</button>
+                  <button class="btn btn-primary mt-1 p-2" (click)="showPasswordFields($event)">
+                    <i class="bi bi-lock me-2"></i>Alterar Senha
+                  </button>
                 </div>
 
             </div>
@@ -118,8 +120,13 @@ path="user"
                 <td>{{ user.roles.name }}</td>
                 <td ><div [ngClass]="{ 'btn btn-sm btn-success': user.active, 'btn btn-sm btn-warning': !user.active }">{{ user.active ? 'Ativo' : 'Inativo' }}</div></td>
                 <td>
-                    <input type="button" (click)="edit(user.id)"    class="btn btn-outline-primary" value="editar">
-                    <input type="button" (click)="delete(user.id)"  class="btn btn-outline-danger"  value="excluir">
+
+                    <button  title="editar" (click)="edit(user.id)"   class="btn btn-outline-primary m-1"   >
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button   title="excluir" (click)="delete(user.id)"  class="btn btn-outline-danger m-1" >
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
                 </td> 
               </tr>
             </tbody>
