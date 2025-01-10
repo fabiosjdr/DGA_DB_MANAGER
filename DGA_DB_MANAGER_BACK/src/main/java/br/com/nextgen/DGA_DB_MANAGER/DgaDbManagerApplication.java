@@ -12,7 +12,8 @@ public class DgaDbManagerApplication {
 
 
 		Dotenv dotenv = Dotenv.configure().load();
-	
+     
+        System.out.println(dotenv);
         // Configurar variáveis de ambiente
         System.setProperty("DB_URL", dotenv.get("DB_URL"));
         System.setProperty("DB_NAME", dotenv.get("DB_NAME"));

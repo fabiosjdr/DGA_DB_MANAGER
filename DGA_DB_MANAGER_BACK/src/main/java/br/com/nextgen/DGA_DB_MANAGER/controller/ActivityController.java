@@ -153,7 +153,9 @@ public class ActivityController{
 
     private void createDetail(Activity activity){
         
-        List<Status> statuses = statusRepository.findAll();
+        Account account = authService.getAccount();
+
+        List<Status> statuses = statusRepository.findByAccount(account);
 
         for (Status status : statuses) {
 

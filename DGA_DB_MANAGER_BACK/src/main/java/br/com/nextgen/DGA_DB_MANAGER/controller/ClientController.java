@@ -66,7 +66,9 @@ public class ClientController {
 
     @GetMapping
     public ResponseEntity<?>  get(){
-        var all = this.repository.findAll();
+        Account account = authService.getAccount();
+
+        var all = this.repository.findByAccount(account);
         return ResponseEntity.ok(all);
     }
 

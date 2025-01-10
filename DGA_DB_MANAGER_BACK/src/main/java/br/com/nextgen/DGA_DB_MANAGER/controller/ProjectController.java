@@ -1,5 +1,6 @@
 package br.com.nextgen.DGA_DB_MANAGER.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -61,8 +62,11 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity<?>  get(){
-        var findAll = this.repository.findAll();
+    public ResponseEntity<List<Project>>  get(){
+
+        Account account = authService.getAccount();
+        var findAll = this.repository.findByAccount(account);
+        
         return ResponseEntity.ok(findAll);
     }
 
