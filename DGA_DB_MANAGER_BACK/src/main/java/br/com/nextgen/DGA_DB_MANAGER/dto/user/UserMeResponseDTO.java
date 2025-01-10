@@ -1,24 +1,20 @@
 package br.com.nextgen.DGA_DB_MANAGER.dto.user;
 
 import java.math.BigInteger;
-import java.util.List;
 
-import br.com.nextgen.DGA_DB_MANAGER.domain.account.Account;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user_roles.UserRoles;
 
-public record UserResponseDTO(
+public record UserMeResponseDTO(
     BigInteger id, 
     String     name,
     String     email, 
     Boolean    active,
-    UserRoles  roles,
-    List<Account> accounts
+    UserRoles  roles
 ) {
 
-    public UserResponseDTO(){
+    public UserMeResponseDTO(){
 
         this(
-            null,
             null,
             null,
             null,

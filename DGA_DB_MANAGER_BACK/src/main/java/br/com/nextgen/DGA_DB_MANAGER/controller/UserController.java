@@ -1,7 +1,6 @@
 package br.com.nextgen.DGA_DB_MANAGER.controller;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -25,6 +24,7 @@ import br.com.nextgen.DGA_DB_MANAGER.domain.account.Account;
 import br.com.nextgen.DGA_DB_MANAGER.domain.account_user.AccountUser;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user.User;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user_roles.UserRoles;
+import br.com.nextgen.DGA_DB_MANAGER.dto.user.UserMeResponseDTO;
 import br.com.nextgen.DGA_DB_MANAGER.dto.user.UserRequestDTO;
 import br.com.nextgen.DGA_DB_MANAGER.dto.user.UserResponseDTO;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.account_user.AccountUserRepository;
@@ -47,10 +47,11 @@ public class UserController {
     private final AuthService           authService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDTO>  me(){
+    public ResponseEntity<UserMeResponseDTO>  me(){
         
         User authUser = authService.getAuthUser();
-        return ResponseEntity.ok(new UserResponseDTO(authUser.getId(),authUser.getName(), authUser.getEmail(),authUser.getActive(),authUser.getRoles()));
+        
+        return ResponseEntity.ok(new UserMeResponseDTO(authUser.getId(),authUser.getName(), authUser.getEmail(),authUser.getActive(),authUser.getRoles()));
     }
 
     @GetMapping("/search")
@@ -71,27 +72,34 @@ public class UserController {
         }
 
         Page<UserResponseDTO> response = users.map(user -> 
-            new UserResponseDTO(user.getId(),user.getName(), user.getEmail(),user.getActive(),user.getRoles())
+            new UserResponseDTO(user.getId(),user.getName(), user.getEmail(),user.getActive(),user.getRoles(),user.getAccounts())
         );
     
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDTO>>  get(){
-        var all = this.repository.findAll();
+    public ResponseEntity<?>  get(){
         
-        List<UserResponseDTO> userResponseDTOList = all.stream()
-        .map(user -> new UserResponseDTO(
-            user.getId(),
-            user.getName(),
-            user.getEmail(),
-            user.getActive(),
-            user.getRoles()
-        ))
-        .toList(); // Java 17 suporta o método toList()
+        Account account = authService.getAccount();
+        var findAll = this.repository.findByUserAccount(account.getId());
 
-    return ResponseEntity.ok(userResponseDTOList);
+        return ResponseEntity.ok(findAll);
+
+        //     var all = this.repository.findAll();
+            
+        //     List<UserResponseDTO> userResponseDTOList = all.stream()
+        //     .map(user -> new UserResponseDTO(
+        //         user.getId(),
+        //         user.getName(),
+        //         user.getEmail(),
+        //         user.getActive(),
+        //         user.getRoles(),
+        //         user.getAccounts()
+        //     ))
+        //     .toList(); // Java 17 suporta o método toList()
+
+        // return ResponseEntity.ok(userResponseDTOList);
     }
 
     
@@ -104,7 +112,7 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         
-        return ResponseEntity.ok( new UserResponseDTO(user.getId(),user.getName(), user.getEmail(),user.getActive(),user.getRoles()));
+        return ResponseEntity.ok( new UserResponseDTO(user.getId(),user.getName(), user.getEmail(),user.getActive(),user.getRoles(),user.getAccounts()));
     }
 
     @PutMapping
@@ -125,7 +133,7 @@ public class UserController {
             
             this.repository.save(user);
 
-            return ResponseEntity.ok( new UserResponseDTO(user.getId(),user.getName(), user.getEmail(),user.getActive(),user.getRoles()));
+            return ResponseEntity.ok( new UserResponseDTO(user.getId(),user.getName(), user.getEmail(),user.getActive(),user.getRoles(),user.getAccounts()));
 
         }else{
 
