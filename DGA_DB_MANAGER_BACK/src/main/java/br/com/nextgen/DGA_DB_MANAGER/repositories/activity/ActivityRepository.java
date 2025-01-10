@@ -15,6 +15,6 @@ import br.com.nextgen.DGA_DB_MANAGER.domain.activity.Activity;
 public interface ActivityRepository extends JpaRepository<Activity,BigInteger> {
     Optional<Activity> findByActivity(String activity);
 
-    @Query("SELECT a FROM activities a WHERE a.activity  LIKE CONCAT('%', :text, '%') ")
-    Page<Activity> findByActivityContainingIgnoreCase(@Param("text") String text, Pageable pageable);
+    @Query("SELECT a FROM activities a WHERE a.account.id = :accountId and (a.activity  LIKE CONCAT('%', :text, '%') ) ")
+    Page<Activity> findByActivityContainingIgnoreCase(@Param("text") String text, Pageable pageable, @Param("accountId") BigInteger accountId);
 }

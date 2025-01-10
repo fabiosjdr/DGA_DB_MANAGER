@@ -62,9 +62,12 @@ public class ActivityController{
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
         ) {
+
+
+        Account account = authService.getAccount();
             
         Pageable pageable = PageRequest.of(page, size);
-        Page<Activity> activities = repository.findByActivityContainingIgnoreCase(text,pageable);
+        Page<Activity> activities = repository.findByActivityContainingIgnoreCase(text,pageable,account.getId());
 
         if (activities.isEmpty()) {
             return ResponseEntity.noContent().build();

@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.nextgen.DGA_DB_MANAGER.domain.account.Account;
 import br.com.nextgen.DGA_DB_MANAGER.domain.category.Category;
 import br.com.nextgen.DGA_DB_MANAGER.dto.category.CategoryRequestDTO;
 import br.com.nextgen.DGA_DB_MANAGER.dto.category.CategoryResponseDTO;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.category.CategoryRepository;
+import br.com.nextgen.DGA_DB_MANAGER.service.AuthService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -29,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoryController {
 
     private final CategoryRepository repository;
-    
+    private final AuthService        authService;
 
     @GetMapping("/search")
     public ResponseEntity<Page<CategoryResponseDTO>> searchByText(
@@ -38,28 +40,30 @@ public class CategoryController {
             @RequestParam(defaultValue = "10") int size
         ) {
             
+        Account account = authService.getAccount();
+        
         Pageable pageable = PageRequest.of(page, size);
-        Page<Category> category = repository.findByNameContainingIgnoreCase(text,pageable);
+        Page<Category> category = repository.findByNameContainingIgnoreCase(text,pageable,account.getId());
 
         if (category.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
         Page<CategoryResponseDTO> response = category.map(cat -> 
-            new CategoryResponseDTO(cat.getId(),cat.getName())
+            new CategoryResponseDTO(cat.getId(),cat.getName(),cat.getAccount())
         );
     
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity  get(){
+    public ResponseEntity<?>  get(){
         var all = this.repository.findAll();
         return ResponseEntity.ok(all);
     }
     
     @GetMapping("/{id}")
-    public ResponseEntity  getByID(@PathVariable String id){
+    public ResponseEntity<Category>  getByID(@PathVariable String id){
 
         Category domain = this.repository.findById(id).orElse(null);
         
@@ -71,15 +75,17 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody @Validated CategoryRequestDTO body){
+    public ResponseEntity<Category> create(@RequestBody @Validated CategoryRequestDTO body){
 
-        Optional<Category> domain = this.repository.findByName(body.name());
+        Account account = authService.getAccount();
+
+        Optional<Category> domain = this.repository.findByNameAndAccount(body.name(),account);
         
         if(domain.isEmpty()){
 
             Category  newObj = new Category();
                       newObj.setName(body.name());
-
+                      newObj.setAccount(account);
                       this.repository.save(newObj);
 
                     return ResponseEntity.ok(newObj);
@@ -91,11 +97,13 @@ public class CategoryController {
     }
 
     @PutMapping
-    public ResponseEntity update(@RequestBody @Validated CategoryRequestDTO body){
+    public ResponseEntity<Category> update(@RequestBody @Validated CategoryRequestDTO body){
+
+        Account account = authService.getAccount();
 
         Category domain = this.repository.findById(body.id()).orElse(null);
         
-        if(domain != null){
+        if(domain != null && account.getId() == domain.getAccount().getId()){
 
             domain.setName(body.name());
             this.repository.save(domain);
@@ -111,11 +119,14 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity  delete(@PathVariable String id){
+    public ResponseEntity<Category>  delete(@PathVariable String id){
         
+        Account account = authService.getAccount();
+
         Category domain = this.repository.findById(id).orElse(null);
         
-        if (domain == null) {
+        if(domain == null || account.getId() != domain.getAccount().getId()){
+
             return ResponseEntity.notFound().build();
         }
         

@@ -46,9 +46,12 @@ public class ClientController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
         ) {
+
+
+        Account account = authService.getAccount();
             
         Pageable pageable = PageRequest.of(page, size);
-        Page<Client> clients = repository.findByNameContainingIgnoreCase(text,pageable);
+        Page<Client> clients = repository.findByNameContainingIgnoreCase(text,pageable,account.getId());
 
         if (clients.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -62,13 +65,13 @@ public class ClientController {
     }
 
     @GetMapping
-    public ResponseEntity  get(){
+    public ResponseEntity<?>  get(){
         var all = this.repository.findAll();
         return ResponseEntity.ok(all);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity  getByID(@PathVariable String id){
+    public ResponseEntity<Client>  getByID(@PathVariable String id){
 
         Client client = this.repository.findById(id).orElse(null);
         
@@ -82,9 +85,9 @@ public class ClientController {
     @PostMapping
     public ResponseEntity<ClientResponseDTO> create(@RequestBody @Validated ClientRequestDTO body){
 
-        Optional<Client> client = this.repository.findByName(body.name());
-        
         Account account = authService.getAccount();
+
+        Optional<Client> client = this.repository.findByNameAndAccount(body.name(),account);
         
         if(client.isEmpty()){
 
@@ -112,7 +115,7 @@ public class ClientController {
         
         Account account = authService.getAccount();
         
-        if(client != null){
+        if(client != null && account.getId() == client.getAccount().getId()){
 
             client.setName(body.name());
             client.setResponsable(body.responsable());
@@ -132,11 +135,13 @@ public class ClientController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity  delete(@PathVariable String id){
-        
+    public ResponseEntity<Client>  delete(@PathVariable String id){
+
+        Account account = authService.getAccount();
+
         Client client = this.repository.findById(id).orElse(null);
         
-        if (client == null) {
+        if (client == null || account.getId() == client.getAccount().getId() ) {
             return ResponseEntity.notFound().build();
         }
         

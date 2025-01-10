@@ -43,9 +43,11 @@ public class ProjectController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
         ) {
-            
+
+        Account account = authService.getAccount();
+        
         Pageable pageable = PageRequest.of(page, size);
-        Page<Project> projects = repository.findByNameContainingIgnoreCase(text,pageable);
+        Page<Project> projects = repository.findByNameContainingIgnoreCase(text,pageable,account.getId());
 
         if (projects.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -59,17 +61,19 @@ public class ProjectController {
     }
 
     @GetMapping
-    public ResponseEntity  get(){
+    public ResponseEntity<?>  get(){
         var findAll = this.repository.findAll();
         return ResponseEntity.ok(findAll);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity  getByID(@PathVariable String id){
+    public ResponseEntity<Project>  getByID(@PathVariable String id){
+
+        Account account = authService.getAccount();
 
         Project project = this.repository.findById(id).orElse(null);
         
-        if (project == null) {
+        if (project == null || account.getId() != project.getAccount().getId()) {
             return ResponseEntity.notFound().build();
         }
         
@@ -77,15 +81,14 @@ public class ProjectController {
     }
 
     @PostMapping
-    public ResponseEntity create(@RequestBody @Validated ProjectsRequestDTO body){
-
-        Optional<Project> project = this.repository.findByName(body.name());
-        
-        Client client = clientRepository.findById(body.id_client().toString()).orElseThrow(() -> new RuntimeException("Client not found"));
+    public ResponseEntity<Project> create(@RequestBody @Validated ProjectsRequestDTO body){
 
         Account account = authService.getAccount();
 
+        Optional<Project> project = this.repository.findByNameAndAccount(body.name(),account);
         
+        Client client = clientRepository.findById(body.id_client().toString()).orElseThrow(() -> new RuntimeException("Client not found"));
+
         if(project.isEmpty()){
 
             Project  newObj = new Project();
@@ -111,9 +114,10 @@ public class ProjectController {
       
         Project project = this.repository.findById(body.id().toString()).orElse(null);
         Client client   = clientRepository.findById(body.id_client().toString()).orElseThrow(() -> new RuntimeException("Client not found"));
+        
         Account account = authService.getAccount();
 
-        if(project != null){
+        if(project != null && account.getId() == project.getAccount().getId()){
 
             project.setName(body.name());
             project.setDescription(body.description());
@@ -136,9 +140,11 @@ public class ProjectController {
     @DeleteMapping("/{id}")
     public ResponseEntity  delete(@PathVariable String id){
         
+        Account account = authService.getAccount();
+
         Project project = this.repository.findById(id).orElse(null);
         
-        if (project == null) {
+        if (project == null || account.getId() != project.getAccount().getId()) {
             return ResponseEntity.notFound().build();
         }
         

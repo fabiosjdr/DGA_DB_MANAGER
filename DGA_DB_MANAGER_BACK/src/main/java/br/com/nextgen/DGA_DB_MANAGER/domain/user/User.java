@@ -34,4 +34,8 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "id_role") 
     private UserRoles roles;
+
+    // @OneToOne
+    // @JoinColumn(name = "id", referencedColumnName = "id_user") // Ajuste do nome da coluna e da referência
+    // private AccountUser account;
 }
