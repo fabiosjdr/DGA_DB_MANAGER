@@ -7,8 +7,7 @@ export interface Project {
     description: string,
     id_client  : string,
     start_date : string,
-    end_date   : string,
-    id_account : bigint
+    end_date   : string
 }
 
 
@@ -20,5 +19,4 @@ export interface ProjectForm {
     id_client  : FormControl,
     start_date : FormControl,
     end_date   : FormControl
-    id_account : FormControl
 }

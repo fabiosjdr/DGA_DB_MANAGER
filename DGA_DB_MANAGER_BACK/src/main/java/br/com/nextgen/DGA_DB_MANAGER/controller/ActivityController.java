@@ -151,6 +151,7 @@ public class ActivityController{
      
     }
 
+    @Transactional
     private void createDetail(Activity activity){
         
         Account account = authService.getAccount();
@@ -171,6 +172,7 @@ public class ActivityController{
 
     }
 
+    @Transactional
     @PutMapping
     public ResponseEntity<?> update(@RequestBody @Validated ActivityRequestDTO body){
 
@@ -215,6 +217,7 @@ public class ActivityController{
 
     }
 
+    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<Activity>  delete(@PathVariable BigInteger id){
         

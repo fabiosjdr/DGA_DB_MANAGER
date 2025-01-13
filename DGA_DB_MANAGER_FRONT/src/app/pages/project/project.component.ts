@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DefaultPageLayoutComponent } from '../../components/default-page-layout/default-page-layout.component';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup,  ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
@@ -15,6 +15,7 @@ import { ProjectForm } from '../../models/project.interface';
 import { Client } from '../../models/client.interface';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { ClientService } from '../../services/client.service';
 
 
 @Component({
@@ -52,10 +53,11 @@ export class ProjectComponent implements OnInit {
   options: Client[] = [];
   filteredOptions!: Observable<any>;
 
+  startDate: Date | null = null;
   startHourControl = new FormControl('');
   endHourControl   = new FormControl('');
 
-  constructor( private pageService:DefaultPageService,private clientService:DefaultPageService, private toastService: ToastrService){
+  constructor( private pageService:DefaultPageService,private clientService:ClientService, private toastService: ToastrService){
 
     //faz o vinculo com o formulario padrao
     this.projectForm = new FormGroup({
@@ -64,8 +66,7 @@ export class ProjectComponent implements OnInit {
       description: new FormControl("",[Validators.required]),
       id_client  : new FormControl("",[Validators.required]),
       start_date : new FormControl<string | null>(null),
-      end_date   : new FormControl<string | null>(null),
-      id_account : new FormControl(1,[Validators.required]),
+      end_date   : new FormControl<string | null>(null)
     });
 
   }
@@ -130,7 +131,7 @@ export class ProjectComponent implements OnInit {
   
   loadClients(): Observable<void> {
 
-    this.clientService.setApiURL("http://localhost:3000/client");
+    //this.clientService.setApiURL("http://localhost:3000/client");
     
     return new Observable<void>((observer) => {
       this.clientService.getAll().subscribe({
@@ -159,10 +160,17 @@ export class ProjectComponent implements OnInit {
   edit(id:string){
    
     this.DefaultPageLayoutComponent.edit(id).subscribe({
+      
       next: (res) => {
+     
+        this.DefaultPageLayoutComponent.fillDate(res,'start_date',this.startHourControl,' ');
+        this.DefaultPageLayoutComponent.fillDate(res,'end_date',this.endHourControl,' ');
+
         this.clientService.get(res.client.id).subscribe({
           next: (res) =>  {
+           
             this.clientControl.setValue(res);
+            this.projectForm.patchValue({"id_client":res.id});
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })

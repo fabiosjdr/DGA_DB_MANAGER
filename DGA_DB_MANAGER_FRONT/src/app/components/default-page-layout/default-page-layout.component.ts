@@ -153,6 +153,21 @@ export class DefaultPageLayoutComponent {
 
   }
 
+  isValidISODateTime(value: string): boolean {
+   
+    const date = new Date(value);
+   
+    if( !isNaN(date.getTime()) ){
+      
+      if(typeof value!== 'number'){
+        return  value.includes('T');
+      }
+    }
+    
+
+    return false; 
+  }
+
   edit(id:string): Observable <any>{
     
     return new Observable<any>((observer) => {
@@ -170,6 +185,12 @@ export class DefaultPageLayoutComponent {
               //console.log(`Nome do controle: ${controlName}, Valor: ${control?.value}`);
               // Você pode verificar se o controle é válido, estado de touch, etc.
               if (control) {
+
+                if(this.isValidISODateTime(res[controlName])){
+                  res[controlName] = res[controlName].replace('T', ' ');
+                }
+
+
                 tempPageForm[controlName] = res[controlName];
               }
 
@@ -221,6 +242,31 @@ export class DefaultPageLayoutComponent {
     this.search();
   }
 
+  fillDate(res:Record<string, any>,field:string,formControl:FormControl,spliter:String){
+   
+    const input = document.getElementById(field) as HTMLInputElement;
+    
+    if (input) {
+
+      var value = res[field];
+
+      if(value){
+        const datePipe      = new DatePipe('pt-BR');
+
+        const [date, time] = value.split(spliter);
+        
+        input.value = date != null ? datePipe.transform(date, 'dd/MM/yyyy') ?? '' : '';
+
+        input.dispatchEvent(new Event('input')); // Notifica o Angular sobre a alteração
+
+        formControl.setValue(time);
+
+       
+      }
+     
+    }
+  }
+
   validateDate(e:any,type:string,field:string,formControl:FormControl){
     
     const datePipe      = new DatePipe('pt-BR');
@@ -237,7 +283,13 @@ export class DefaultPageLayoutComponent {
       }
 
     }else{
-      const hour          = formControl.value != null && formControl.value != '' ? formControl.value.slice(0,2) + ':' + formControl.value.slice(2) : '00:00:00';
+      var  hour = '';
+      if(formControl.value.length < 8){
+        hour        = formControl.value != null && formControl.value != '' ? formControl.value.slice(0,2) + ':' + formControl.value.slice(2) : '00:00:00';
+      }else{
+        hour        = formControl.value;
+      }
+      console.log(hour);
       const dataFormatada = datePipe.transform(e.target.value, `yyyy-MM-dd ${hour}`)
 
       if(this.checkDate(dataFormatada)){

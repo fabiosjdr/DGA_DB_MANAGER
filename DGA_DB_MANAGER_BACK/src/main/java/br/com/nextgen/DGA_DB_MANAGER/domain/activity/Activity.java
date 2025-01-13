@@ -53,10 +53,6 @@ public class Activity {
     @JoinColumn(name = "id_project")
     private Project project;
 
-    // @ManyToOne
-    // @JoinColumn(name = "id_status")
-    // private Status status;
-
     @ManyToOne
     @JoinColumn(name = "id_user") 
     private User user;

@@ -7,8 +7,7 @@ export interface ActivityForm {
     id_client  : FormControl,
     id_project : FormControl,
     start_date : FormControl,
-    end_date   : FormControl,
-    id_account : FormControl
+    end_date   : FormControl
 }
 
 export interface Activity {

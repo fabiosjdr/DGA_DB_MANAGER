@@ -104,8 +104,7 @@ export class ActivityComponent implements OnInit {
       id_client  : new FormControl("",[Validators.required]),
       id_project : new FormControl("",[Validators.required]),
       start_date : new FormControl("",[Validators.required]),
-      end_date   : new FormControl("",[Validators.required]),
-      id_account : new FormControl(1,[Validators.required])
+      end_date   : new FormControl("",[Validators.required])
     });
     
     
@@ -228,6 +227,9 @@ export class ActivityComponent implements OnInit {
     this.DefaultPageLayoutComponent.edit(id).subscribe({
 
       next: (res) => {
+        console.log(res);
+        this.DefaultPageLayoutComponent.fillDate(res,'start_date',this.startHourControl,'T');
+        this.DefaultPageLayoutComponent.fillDate(res,'end_date',this.endHourControl,'T');
 
         this.clientService.get(res.client.id).subscribe({
           next: (resCli) =>  {
@@ -245,13 +247,13 @@ export class ActivityComponent implements OnInit {
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
 
-        this.statusService.get(res.status.id).subscribe({
-          next: (resStatus) =>  {
-            this.statusControl.setValue(resStatus);
-            this.autoFnStatus.setValue(resStatus);
-          },
-          error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
-        })
+        // this.statusService.get(res.status.id).subscribe({
+        //   next: (resStatus) =>  {
+        //     this.statusControl.setValue(resStatus);
+        //     this.autoFnStatus.setValue(resStatus);
+        //   },
+        //   error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
+        // })
 
         this.projectService.get(res.project.id).subscribe({
           next: (resProj) =>  {

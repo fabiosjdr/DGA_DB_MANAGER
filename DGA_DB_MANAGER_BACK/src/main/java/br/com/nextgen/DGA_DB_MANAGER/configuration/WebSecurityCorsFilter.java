@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class WebSecurityCorsFilter implements Filter{
-	 @Override
+	 	@Override
 	    public void init(FilterConfig filterConfig) throws ServletException {
 	    }
 	    @Override

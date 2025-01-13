@@ -130,7 +130,7 @@ public class StatusController {
 
         Status domain = this.repository.findById(id).orElse(null);
         
-        if (domain == null || account.getId() == domain.getAccount().getId() ) {
+        if (domain == null || account.getId() != domain.getAccount().getId() ) {
             return ResponseEntity.notFound().build();
         }
         

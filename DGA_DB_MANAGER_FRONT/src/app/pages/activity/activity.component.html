@@ -33,7 +33,7 @@ path="activity"
                  
                   <mat-form-field appearance="outline" class="me-1 col">
                     <mat-label>Fim</mat-label>
-                    <input matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','end_date',endHourControl)" [matDatepicker]="pickerEnd"  mask="00/00/0000"  placeholder="00/00/0000">
+                    <input id="end_date" matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','end_date',endHourControl)" [matDatepicker]="pickerEnd"  mask="00/00/0000"  placeholder="00/00/0000">
                     <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                     <mat-datepicker #pickerEnd></mat-datepicker>
                   </mat-form-field>

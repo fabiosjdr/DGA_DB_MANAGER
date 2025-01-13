@@ -2,11 +2,12 @@
 
         <app-default-page-layout 
           title="Projetos" 
-          [pageForm]="projectForm" path="project" 
+          [pageForm]="projectForm" 
+          path="project" 
           (setList)="setList($event)" 
           [disableSaveBtn]="!projectForm.valid"
         >
-     
+    
              <section form-page-body>
             
                 <form [formGroup]="projectForm" class="ng-untouched ng-pristine ng-valid">
@@ -30,7 +31,7 @@
                            
                             <mat-form-field appearance="outline" class="me-1 col">
                               <mat-label>Início</mat-label>
-                              <input id="start_date" matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','start_date',startHourControl)" [matDatepicker]="pickerStart" mask="00/00/0000"  placeholder="00/00/0000">
+                              <input id="start_date"  matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','start_date',startHourControl)" [matDatepicker]="pickerStart" mask="00/00/0000"  placeholder="00/00/0000">
                               <mat-datepicker-toggle matIconSuffix [for]="pickerStart"></mat-datepicker-toggle>
                               <mat-datepicker #pickerStart></mat-datepicker>
                             </mat-form-field>
@@ -48,7 +49,7 @@
                            
                             <mat-form-field appearance="outline" class="me-1 col">
                               <mat-label>Fim</mat-label>
-                              <input matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','end_date',endHourControl)" [matDatepicker]="pickerEnd"  mask="00/00/0000"  placeholder="00/00/0000">
+                              <input id="end_date" matInput (dateChange)="DefaultPageLayoutComponent.validateDate($event,'date','end_date',endHourControl)" [matDatepicker]="pickerEnd"  mask="00/00/0000"  placeholder="00/00/0000">
                               <mat-datepicker-toggle matIconSuffix [for]="pickerEnd"></mat-datepicker-toggle>
                               <mat-datepicker #pickerEnd></mat-datepicker>
                             </mat-form-field>

@@ -143,7 +143,7 @@ public class ClientController {
 
         Client client = this.repository.findById(id).orElse(null);
         
-        if (client == null || account.getId() == client.getAccount().getId() ) {
+        if (client == null || account.getId() != client.getAccount().getId() ) {
             return ResponseEntity.notFound().build();
         }
         
