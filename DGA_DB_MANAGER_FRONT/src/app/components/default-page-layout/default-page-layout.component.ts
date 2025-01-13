@@ -159,7 +159,7 @@ export class DefaultPageLayoutComponent {
    
     if( !isNaN(date.getTime()) ){
       
-      if(typeof value!== 'number'){
+      if( value.includes !== undefined){
         return  value.includes('T');
       }
     }
