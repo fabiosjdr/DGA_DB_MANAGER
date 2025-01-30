@@ -13,10 +13,13 @@
                      
                     <smart-kanban #kanban 
                         
+                        [formatStringDate]="'dd/MM/yyyy'"
                         [dialogRendered]="dialogRendered"
+                        [dialogCustomizationFunction]="dialogCustomizationFunction"
                         [taskActions]="taskActions"
                         [columnHeaderTemplate]="headerHtml"
-                    
+                      
+
                         [messages]="messages"
                         [addNewColumn]="addNewColumn" 
                         [allowColumnRemove]="allowColumnRemove" 
@@ -37,6 +40,7 @@
                         [taskProgress]="taskProgress" 
                         [columns]="columns"
                         [users]="users"
+                        
 
                         (change)="onKanbanChange($event)"
                         (columnAdd)="onColumnAdd($event)"

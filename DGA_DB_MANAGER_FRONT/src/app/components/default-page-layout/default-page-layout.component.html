@@ -5,10 +5,23 @@
 
             <div class="card card-user">
                 <div class="card-header">
-                    <span class="card-title">{{title}}</span> 
+
+                    <div class="d-flex justify-content-between bd-highlight  ">
+
+                        <div class=" card-title">{{title}}</div> 
+                        <div >
+                            <button 
+                            (click)="toggleMinimizeForm()" 
+                            class="btn btn-primary p-0 m-0"
+                        >
+                            <i class="bi" [ngClass]="isMinimizedForm ? 'bi-plus-square' : 'bi-dash-square'"></i>
+                        </button>
+                        </div>
+
+                    </div>
                 </div>
                 
-                <section class="form-section">
+                <section class="form-section" *ngIf="!isMinimizedForm">
                     <div class="card-body ">
                         <ng-content select="[form-page-body]"></ng-content>
                     </div>
@@ -50,7 +63,7 @@
 
                             <div class="flex-grow-1  ">{{title}} </div>
 
-                            <div class="mr-4 ">
+                            <div class="me-4 pe-2 ">
                                 <form  [formGroup]="pageSearchForm" (submit)="search()" class="d-flex">
                                    
                                     <div class="input-group ">
@@ -62,17 +75,22 @@
 
                                 </form>
                             </div>
+                            <div >
+                                <button  (click)="toggleMinimizeList()" class="btn btn-primary p-0 m-0" >
+                                    <i class="bi" [ngClass]="isMinimizedList ? 'bi-plus-square' : 'bi-dash-square'"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card-body">
+                    <div class="card-body" *ngIf="!isMinimizedList">
 
                         <ng-content select="[page-list-body]">
                         </ng-content>
                         
                     </div>
 
-                    <div class="card-footer bg-transparent border-primary">
+                    <div class="card-footer bg-transparent border-primary" *ngIf="!isMinimizedList">
                         
                         <mat-paginator [length]="totalElements"
                                 [pageSize]="pageSize"
@@ -81,7 +99,6 @@
                                 (page)="onPaginateChange($event)"
                                 >
                         </mat-paginator>
-
 
                     </div>
                 </div>

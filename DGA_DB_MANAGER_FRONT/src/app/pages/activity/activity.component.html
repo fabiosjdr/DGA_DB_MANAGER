@@ -78,6 +78,7 @@ path="activity"
                        [matAutocomplete]="autoProject">
 
                 <mat-autocomplete  #autoProject="matAutocomplete" (optionSelected)='autoFnProject.setValue($event.option.value)' [displayWith]="autoFnProject.displayFn">
+                  <mat-option>Nenhum</mat-option>
                   @for (optionProject of filteredOptionsProject | async; track optionProject) {
                     <mat-option [value]="optionProject">{{optionProject.name}}</mat-option>
                   }
@@ -96,6 +97,7 @@ path="activity"
                        [matAutocomplete]="autoClient">
 
                 <mat-autocomplete  #autoClient="matAutocomplete" (optionSelected)='autoFnCategory.setValue($event.option.value)' [displayWith]="autoFnCategory.displayFn">
+                  <mat-option>Nenhum</mat-option>
                   @for (optionCategory of filteredOptionsCategory | async; track optionCategory) {
                     <mat-option [value]="optionCategory">{{optionCategory.name}}</mat-option>
                   }
@@ -114,6 +116,8 @@ path="activity"
                        [matAutocomplete]="autoCategory">
 
                 <mat-autocomplete  #autoCategory="matAutocomplete" (optionSelected)='autoFnClient.setValue($event.option.value)' [displayWith]="autoFnClient.displayFn">
+                  <mat-option>Nenhum</mat-option>
+                  
                   @for (option of filteredOptionsClient | async; track option) {
                     <mat-option [value]="option">{{option.name}}</mat-option>
                   }

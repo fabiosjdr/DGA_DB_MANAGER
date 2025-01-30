@@ -1,3 +1,4 @@
+import { Client } from "../types/client-response.type";
 import { Stage } from "./stage.interface";
 import { Users } from "./users.interface";
 
@@ -12,5 +13,6 @@ export interface Detail {
     start_date : Date,
     due_date   : Date,
     user       : Users,
-    stage      : Stage
+    stage      : Stage,
+    client     : Client
 }

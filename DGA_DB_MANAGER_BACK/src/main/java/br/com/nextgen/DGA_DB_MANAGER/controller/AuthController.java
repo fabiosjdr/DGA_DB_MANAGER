@@ -70,6 +70,7 @@ public class AuthController {
             User newuser = new User();
                  newuser.setEmail(body.email());
                  newuser.setName(body.name());
+                 newuser.setActive(true);
                  newuser.setPassword(passwordEncoder.encode( body.password() ));
 
             this.repository.save(newuser);

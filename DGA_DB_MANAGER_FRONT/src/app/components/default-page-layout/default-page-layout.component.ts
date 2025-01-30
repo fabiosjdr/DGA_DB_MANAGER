@@ -46,6 +46,8 @@ export class DefaultPageLayoutComponent {
   pageLength      : number = 0;
   page            : number = 0;
   
+  isMinimizedForm: boolean = false;
+  isMinimizedList: boolean = false;
 
   constructor(private router:Router, private pageService:DefaultPageService,  private toastService: ToastrService){
     
@@ -76,6 +78,14 @@ export class DefaultPageLayoutComponent {
       this.submit();
     }
 
+  }
+
+  toggleMinimizeForm() {
+    this.isMinimizedForm = !this.isMinimizedForm;
+  }
+
+  toggleMinimizeList() {
+    this.isMinimizedList = !this.isMinimizedList;
   }
 
   setPageService(pageService:any){
@@ -157,7 +167,7 @@ export class DefaultPageLayoutComponent {
    
     const date = new Date(value);
    
-    if( !isNaN(date.getTime()) ){
+    if( !isNaN(date.getTime()) && value != null ){
       
       if( value.includes !== undefined){
         return  value.includes('T');

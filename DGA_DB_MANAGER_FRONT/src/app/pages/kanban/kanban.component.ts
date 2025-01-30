@@ -14,6 +14,8 @@ import { Observable } from 'rxjs';
 import { UserService } from '../../services/user.service';
 import { Users } from '../../models/users.interface';
 import { KanbanColumnCustomHeaderComponent } from '../../components/kanban-column-custom-header/kanban-column-custom-header.component';
+import { ClientService } from '../../services/client.service';
+import { Client } from '../../types/client-response.type';
 
 @Component({
   selector: 'app-kanban',
@@ -38,7 +40,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   allowColumnRemove        = false;
   collapsible              = false;
   addNewButton             = true;
-  editable                 = false;
+  editable                 = true;
   columnActions            = true;
   columnEditMode           = 'menu';
   columnFooter             = true;
@@ -48,8 +50,8 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   allowColumnEdit          = true;
   allowColumnReorder       = true;
   taskActions              = true;
-  taskDue                  = false;
-  taskComments             = false;
+  taskDue                  = true;
+  taskComments             = true;
   currentUser              = 0;
   taskProgress             = true;
   
@@ -59,6 +61,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   columns   : { id: number; label : string; dataField: string,func:any}[] = [];
   dataSource: { id: number; status: string; text : string}[] = [];
   users     : { id: number; name  : string}[] = [];
+  clients   : { value: number; label  : string}[] = [];
   
   // users = [
   //   { id: 0, name: 'Andrew', image: './../../../src/images/people/andrew.png' },
@@ -71,22 +74,22 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   private clickListener!: () => void ;
 
   private userLoaded    = false;
+  private clientLoaded    = false;
   private columnsLoaded = false;
   private dataLoaded    = false;
   private taskCanBeAdded = true;
+
 
   constructor(
     private route  : ActivatedRoute,
     private stage  : StagesService, 
     private user   : UserService, 
+    private client : ClientService, 
     private detailService : DetailsService, 
     private toastService: ToastrService,
     private renderer: Renderer2
   ) {}
 
-  funcTeste() {
-    console.log("Controle de tempo ativado!");
-  }
 
   ngOnInit(): void {
 
@@ -139,7 +142,32 @@ export class KanbanComponent implements AfterViewInit, OnInit{
       // init code.
       this.loadColumns();
       this.loadUser();
+      this.loadClients();
       this.loadKanbanData();
+  }
+
+  loadClients(): void{
+
+    this.client.getAll().subscribe({
+
+      next: (res) => {
+        //console.log(res);
+        this.clients = res.map((item: Client) => ({
+          value     : item.id,
+          label     : item.name
+        }));
+
+      },
+      error: (err) => {
+        console.error('Erro ao tentar obter usuários:', err);
+      },
+      complete: () => {
+        this.clientLoaded = true;
+        console.log(this.clients)
+        //console.log('Operação finalizada.');
+      },
+    });
+
   }
 
   loadUser(): void{
@@ -195,7 +223,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
     
     this.detailService.get(this.id).subscribe({
       next: (res) => {
-       // console.log(res);
+        console.log(res);
         this.dataSource = res.map((item: Detail) => ({
           id         : Number(item.id), 
           text       : item.title, 
@@ -206,7 +234,8 @@ export class KanbanComponent implements AfterViewInit, OnInit{
           progress   : item.progress,
           userId     : item.user?.id,
           startDate  : item.start_date,
-          dueDate    : item.due_date
+          dueDate    : item.due_date,
+          client     : item.client?.id
         }));
 
       },
@@ -287,8 +316,6 @@ export class KanbanComponent implements AfterViewInit, OnInit{
    // event.preventDefault();
 
   }
-
-  
 
   onTaskBeforeAdd = (event: any) => {
 
@@ -400,8 +427,9 @@ export class KanbanComponent implements AfterViewInit, OnInit{
     // the following editors would be hidden.
     //console.log(dialog.editors)
     for (let key in dialog.editors) {
-       
+      //console.log(key);
         switch (key) {
+            
             case 'progress':
                 //editors[key].style.display = 'none';
                 //labels[key].style.display = 'none';
@@ -424,12 +452,59 @@ export class KanbanComponent implements AfterViewInit, OnInit{
             case 'color':
             case 'priority':
             case 'dueDate':
-                       case 'checklist': {
-                //editors[key].style.display = 'none';
-                //labels[key].style.display = 'none';
-                break;
+            case 'checklist': {
+              //editors[key].style.display = 'none';
+              //labels[key].style.display = 'none';
+            break;
             }
         }
+    }
+  };
+
+  dialogCustomizationFunction = (dialog: any, task: any, editors: any, labels: any) => {
+
+    if (!editors.customField) {
+      
+
+        const multiComboInput = document.createElement('smart-multi-combo-input');
+
+        multiComboInput.setAttribute('data-field', 'customField');
+        multiComboInput.value = task.data['client'] ? task.data['client'] : '';
+
+        multiComboInput.setAttribute('allow-deselect', 'true'); // Exemplo de configuração adicional
+        multiComboInput.setAttribute('single-select', '');
+
+        // const options = [
+        //   { label: '', value: null },
+        //     { label: 'Opção 1', value: '1' },
+        //     { label: 'Opção 2', value: '2' },
+        //     { label: 'Opção 3', value: '3' }
+        // ];
+
+        // Atribuindo o dataSource ao multiComboInput
+        multiComboInput.dataSource = this.clients;
+
+        const label = document.createElement('div');
+        label.setAttribute('class','editor-label')
+        label.innerHTML = 'Cliente';
+
+        const secondColumn = dialog.content.querySelector('.column:not(.single-column)'); // Substitua pela sua classe ou seletor correto
+       
+        if (secondColumn) {
+            // Adiciona o label e o input dentro da segunda coluna
+            secondColumn.appendChild(label);
+            secondColumn.appendChild(multiComboInput);
+    
+            editors.customField = multiComboInput;
+
+        } else {
+            console.error('Segunda coluna não encontrada no diálogo.');
+        }
+
+        
+    }else{
+        editors.customField.value = task.data['customField'] ? task.data['customField'] : '';
+        
     }
   };
 
@@ -494,6 +569,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
     }, 800);
     
   }
+  
   
 
 }

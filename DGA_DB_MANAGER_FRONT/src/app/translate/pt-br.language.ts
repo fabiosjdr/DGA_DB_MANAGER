@@ -60,7 +60,7 @@ export const ptBr = {
         'checklist': 'Checklist',
         'color': 'Cor',
         'commentsIcon': 'Ícone de comentários',
-        'copy': 'Copiar',
+        'copy': 'Duplicar',
         'customize': 'Personalizar tarefas',
         'dueDate': 'Data de vencimento',
         'edit': 'Editar',
