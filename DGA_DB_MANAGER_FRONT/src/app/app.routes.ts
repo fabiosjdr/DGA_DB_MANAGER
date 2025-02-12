@@ -11,6 +11,9 @@ import { StatusComponent } from './pages/status/status.component';
 import { KanbanComponent } from './pages/kanban/kanban.component';
 import { UsersComponent } from './pages/users/users.component';
 import { MeComponent } from './pages/me/me.component';
+import { TeamsComponent } from './pages/teams/teams.component';
+import { MembersComponent } from './pages/members/members.component';
+import { WorkspacesComponent } from './pages/workspaces/workspaces.component';
 
 export const routes: Routes = [
     {
@@ -73,5 +76,21 @@ export const routes: Routes = [
         path: "status",
         component: StatusComponent,
         canActivate: [AuthGuard]
-    }
+    },
+    {
+        path: "workspaces",
+        component: WorkspacesComponent,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: "teams",
+        component: TeamsComponent,
+        canActivate: [AuthGuard]
+    },
+    {
+        path: "members/:id",
+        component: MembersComponent,
+        canActivate: [AuthGuard],
+        
+    },
 ];

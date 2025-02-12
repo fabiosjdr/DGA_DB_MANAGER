@@ -26,18 +26,18 @@ import br.com.nextgen.DGA_DB_MANAGER.domain.account.Account;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity.Activity;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_stage.ActivityStage;
 import br.com.nextgen.DGA_DB_MANAGER.domain.category.Category;
-import br.com.nextgen.DGA_DB_MANAGER.domain.client.Client;
-import br.com.nextgen.DGA_DB_MANAGER.domain.project.Project;
 import br.com.nextgen.DGA_DB_MANAGER.domain.status.Status;
+import br.com.nextgen.DGA_DB_MANAGER.domain.teams.Teams;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user.User;
+import br.com.nextgen.DGA_DB_MANAGER.domain.workspaces.Workspaces;
 import br.com.nextgen.DGA_DB_MANAGER.dto.activity.ActivityRequestDTO;
 import br.com.nextgen.DGA_DB_MANAGER.dto.activity.ActivityResponseDTO;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity.ActivityRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_stage.ActivityStageRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.category.CategoryRepository;
-import br.com.nextgen.DGA_DB_MANAGER.repositories.client.ClientRepository;
-import br.com.nextgen.DGA_DB_MANAGER.repositories.project.ProjectRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.status.StatusRepository;
+import br.com.nextgen.DGA_DB_MANAGER.repositories.teams.TeamsRepository;
+import br.com.nextgen.DGA_DB_MANAGER.repositories.workspaces.WorkspacesRepository;
 import br.com.nextgen.DGA_DB_MANAGER.service.AuthService;
 import lombok.RequiredArgsConstructor;
 
@@ -46,11 +46,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor //lombok ja cria o construtor para n precisar colocar autowired em cada classe
 public class ActivityController{
 
-    private final ActivityRepository  repository;
-    private final ClientRepository    clientRepository;
-    private final CategoryRepository  categoryRepository;
-    private final ProjectRepository   projectRepository;
-    private final StatusRepository    statusRepository;
+    private final ActivityRepository   repository;
+    private final TeamsRepository      teamsRepository;
+    private final CategoryRepository   categoryRepository;
+    private final WorkspacesRepository workspacesRepository;
+    private final StatusRepository     statusRepository;
     private final ActivityStageRepository stageRepository;
     
     private final AuthService         authService;
@@ -77,10 +77,9 @@ public class ActivityController{
             new ActivityResponseDTO(
                 activitie.getId(),
                 activitie.getActivity(),
-                activitie.getClient(),
                 activitie.getCategory(),
-                activitie.getProject(),
-               // activitie.getStatus(),
+                activitie.getTeams(),
+                activitie.getWorkspaces(),
                 activitie.getStart_date(),
                 activitie.getEnd_date(),
                 activitie.getUser(),
@@ -123,9 +122,9 @@ public class ActivityController{
 
         Account account = authService.getAccount();
 
-        Client   client   = clientRepository.findById(body.id_client().toString()).orElseThrow(() -> new RuntimeException("Client not found"));
+        Teams    teams    = teamsRepository.findById(body.id_team().toString()).orElseThrow(() -> new RuntimeException("Client not found"));
         Category category = categoryRepository.findById(body.id_category().toString()).orElseThrow(() -> new RuntimeException("Category not found"));
-        Project  project  = projectRepository.findById(body.id_project().toString()).orElseThrow(() -> new RuntimeException("Project not found"));
+        Workspaces  workspaces  = workspacesRepository.findById(body.id_workspaces().toString()).orElseThrow(() -> new RuntimeException("Project not found"));
         //Status   status   = statusRepository.findById(body.id_status().toString()).orElseThrow(() -> new RuntimeException("Status not found"));
         
         LocalDateTime startDate   = (body.end_date() != null)   ?  LocalDateTime.parse(body.start_date(), formatter)   : null;
@@ -136,8 +135,8 @@ public class ActivityController{
                   newObj.setStart_date(startDate);
                   newObj.setEnd_date(endDate);
                   newObj.setCategory(category);
-                  newObj.setClient(client);
-                  newObj.setProject(project);
+                  newObj.setTeams(teams);
+                  newObj.setWorkspaces(workspaces);
                   //newObj.setStatus(status);
                   newObj.setUser(authUser);
                   newObj.setAccount(account);
@@ -183,9 +182,9 @@ public class ActivityController{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado ou ID não disponível");
         }
 
-        Client   client   = clientRepository.findById(body.id_client().toString()).orElseThrow(() -> new RuntimeException("Client not found"));
-        Category category = categoryRepository.findById(body.id_category().toString()).orElseThrow(() -> new RuntimeException("Category not found"));
-        Project  project  = projectRepository.findById(body.id_project().toString()).orElseThrow(() -> new RuntimeException("Project not found"));
+        Category   category   = categoryRepository.findById(body.id_category().toString()).orElseThrow(() -> new RuntimeException("Category not found"));
+        Teams      teams      = teamsRepository.findById(body.id_team().toString()).orElseThrow(() -> new RuntimeException("Client not found"));
+        Workspaces workspaces = workspacesRepository.findById(body.id_workspaces().toString()).orElseThrow(() -> new RuntimeException("Project not found"));
         //Status   status   = statusRepository.findById(body.id_project().toString()).orElseThrow(() -> new RuntimeException("Status not found"));
 
         Activity domain = this.repository.findById(body.id()).orElse(null);
@@ -200,8 +199,8 @@ public class ActivityController{
             domain.setStart_date(startDate);
             domain.setEnd_date(endDate);
             domain.setCategory(category);
-            domain.setClient(client);
-            domain.setProject(project);
+            domain.setTeams(teams);
+            domain.setWorkspaces(workspaces);
           //  domain.setStatus(status);
             domain.setUser(authUser);
 

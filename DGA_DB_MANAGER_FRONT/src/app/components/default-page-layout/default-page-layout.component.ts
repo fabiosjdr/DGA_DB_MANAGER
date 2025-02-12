@@ -33,7 +33,9 @@ export class DefaultPageLayoutComponent {
   @Input() title               : String = "";
   @Input() pageForm!           : FormGroup;
   @Input() pageServiceOptional : any = null;
-  @Input() path                : string = "";
+  @Input() path                : string | (() => void) = "";
+  @Input() PathVariable        : string | (() => void) = "";
+  @Input() MethodPathVariable  : Array<string> = [];
   @Input() disableSaveBtn      : boolean = true;
   @Input() showList            : boolean = true;
 
@@ -61,6 +63,14 @@ export class DefaultPageLayoutComponent {
 
     if(this.path != ''){ 
       this.pageService.setApiURL(environment.apiUrl+this.path);
+    }
+
+    if(this.PathVariable != ''){
+      this.pageService.setPathVariable(this.PathVariable);
+    }
+
+    if(this.MethodPathVariable){
+      this.pageService.setMethodPathVariable(this.MethodPathVariable);
     }
 
     if(this.pageServiceOptional != null){
@@ -204,12 +214,14 @@ export class DefaultPageLayoutComponent {
                 tempPageForm[controlName] = res[controlName];
               }
 
-              observer.next(res); // Emitimos um evento de conclusão
-              observer.complete(); // Finalizamos o Observable
+              
     
             });
     
             this.pageForm.patchValue(tempPageForm);
+
+            observer.next(res); // Emitimos um evento de conclusão
+            observer.complete(); // Finalizamos o Observable
     
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")

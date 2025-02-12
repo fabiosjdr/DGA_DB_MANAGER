@@ -73,10 +73,10 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
   private clickListener!: () => void ;
 
-  private userLoaded    = false;
-  private clientLoaded    = false;
-  private columnsLoaded = false;
-  private dataLoaded    = false;
+  private userLoaded     = false;
+  private clientLoaded   = false;
+  private columnsLoaded  = false;
+  private dataLoaded     = false;
   private taskCanBeAdded = true;
 
 

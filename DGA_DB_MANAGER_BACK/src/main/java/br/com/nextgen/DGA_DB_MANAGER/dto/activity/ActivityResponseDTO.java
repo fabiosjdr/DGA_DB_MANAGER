@@ -5,16 +5,16 @@ import java.time.LocalDateTime;
 
 import br.com.nextgen.DGA_DB_MANAGER.domain.account.Account;
 import br.com.nextgen.DGA_DB_MANAGER.domain.category.Category;
-import br.com.nextgen.DGA_DB_MANAGER.domain.client.Client;
-import br.com.nextgen.DGA_DB_MANAGER.domain.project.Project;
+import br.com.nextgen.DGA_DB_MANAGER.domain.teams.Teams;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user.User;
+import br.com.nextgen.DGA_DB_MANAGER.domain.workspaces.Workspaces;
 
 public record ActivityResponseDTO(
     BigInteger     id,
     String         activity,
-    Client         client, 
     Category       category,
-    Project        project, 
+    Teams          teams, 
+    Workspaces     workspaces, 
     LocalDateTime  start_date, 
     LocalDateTime  end_date,
     User           user,

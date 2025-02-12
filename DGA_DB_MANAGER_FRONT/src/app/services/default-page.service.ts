@@ -13,6 +13,8 @@ let headers :HttpHeaders;
 export class DefaultPageService {
   
   private apiURL: string = '';
+  private pathVariable : string = '';
+  private methodPathVariable! : Array<string> ;
 
   constructor(private httpClient:HttpClient) {
 
@@ -23,6 +25,14 @@ export class DefaultPageService {
 
     setApiURL(url: string) {
       this.apiURL = url;
+    }
+
+    setPathVariable(variable: any) {
+      this.pathVariable = variable;
+    }
+
+    setMethodPathVariable(methodPathVariable: string[]) {
+      this.methodPathVariable = methodPathVariable;
     }
 
     getApiURL(): string {
@@ -60,8 +70,14 @@ export class DefaultPageService {
     }
 
     search(search:string,page:number,size:number){
+
+      var url = this.apiURL;
+      
+      if (this.methodPathVariable.includes('search') && this.pathVariable != '') {
+        url += '/'+this.pathVariable;
+      }
      
-      var query = this.apiURL+"/search?text="+search+"&page="+page+"&size="+size;
+      var query = url+"/search?text="+search+"&page="+page+"&size="+size;
       //console.log(query);
       return this.httpClient.get<SearchResponse>(query, { headers })
 

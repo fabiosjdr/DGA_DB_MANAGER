@@ -5,9 +5,9 @@ import java.time.LocalDateTime;
 
 import br.com.nextgen.DGA_DB_MANAGER.domain.account.Account;
 import br.com.nextgen.DGA_DB_MANAGER.domain.category.Category;
-import br.com.nextgen.DGA_DB_MANAGER.domain.client.Client;
-import br.com.nextgen.DGA_DB_MANAGER.domain.project.Project;
+import br.com.nextgen.DGA_DB_MANAGER.domain.teams.Teams;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user.User;
+import br.com.nextgen.DGA_DB_MANAGER.domain.workspaces.Workspaces;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -46,12 +46,12 @@ public class Activity {
     private Category category;
 
     @ManyToOne
-    @JoinColumn(name = "id_client")
-    private Client client;
+    @JoinColumn(name = "id_workspaces")
+    private Workspaces workspaces;
 
     @ManyToOne
-    @JoinColumn(name = "id_project")
-    private Project project;
+    @JoinColumn(name = "id_team")
+    private Teams teams;
 
     @ManyToOne
     @JoinColumn(name = "id_user") 
@@ -60,4 +60,12 @@ public class Activity {
     @ManyToOne
     @JoinColumn(name = "id_account") 
     private Account account;
+
+    // @ManyToOne
+    // @JoinColumn(name = "id_client")
+    // private Client client;
+
+    // @ManyToOne
+    // @JoinColumn(name = "id_project")
+    // private Project project;
 }

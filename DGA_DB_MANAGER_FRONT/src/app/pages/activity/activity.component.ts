@@ -29,6 +29,8 @@ import {
   MatDialogModule,
 } from '@angular/material/dialog';
 import { ActivityReportComponent } from '../../components/activity-report/activity-report.component';
+import { TeamsService } from '../../services/teams.service';
+import { WorkspacesService } from '../../services/workspaces.service';
 
 @Component({
   selector: 'app-activity',
@@ -60,51 +62,61 @@ export class ActivityComponent implements OnInit {
   activityForm! : FormGroup<ActivityForm>
   activityList! : any;
   
-  optionsClient  : Client[]   = [];
-  optionsCategory: Category[] = [];
-  optionsProject : Project[]  = [];
-  optionsStatus  : Status[]  = [];
+  //optionsClient  : Client[]   = [];
+  //optionsProject : Project[]  = [];
+  optionsCategory  : Category[] = [];
+  optionsStatus    : Status[]   = [];
+  optionsTeams     : Status[]   = [];
+  optionsWorkspaces: Status[]   = [];
 
-  filteredOptionsClient!  : Observable<any>;
-  filteredOptionsCategory!: Observable<any>;
-  filteredOptionsProject! : Observable<any>;
-  filteredOptionsStatus!  : Observable<any>;
+  //filteredOptionsClient!  : Observable<any>;
+  //filteredOptionsProject! : Observable<any>;
+  filteredOptionsCategory!  : Observable<any>;
+  filteredOptionsStatus!    : Observable<any>;
+  filteredOptionsTeams!     : Observable<any>;
+  filteredOptionsWorkspaces!: Observable<any>;
+  
 
-  clientControl    = new FormControl('');
+  //clientControl    = new FormControl('');
+  //projectControl   = new FormControl('');
   categoryControl  = new FormControl('');
-  projectControl   = new FormControl('');
   statusControl    = new FormControl('');
-
+  teamsControl     = new FormControl('');
   startHourControl = new FormControl('');
   endHourControl   = new FormControl('');
+  workspacesControl= new FormControl('');
 
-  autoFnClient!  : Autocomplete ;
-  autoFnCategory!: Autocomplete ;
-  autoFnProject! : Autocomplete ;
-  autoFnStatus!  : Autocomplete ;
-
+  //autoFnClient!  : Autocomplete ;
+  //autoFnProject! : Autocomplete ;
+  autoFnCategory!   : Autocomplete ;
+  autoFnStatus!     : Autocomplete ;
+  autoFnTeams!      : Autocomplete ;
+  autoFnWorkspaces! : Autocomplete ;
 
   readonly dialog = inject(MatDialog);
 
   constructor(
-    private pageService    : DefaultPageService,
+    //private clientService  : ClientService,
+    //private projectService : ProjectService, 
+    //private pageService    : DefaultPageService,
     private toastService   : ToastrService,
-    private clientService  : ClientService,
     private categoryService: CategoryService, 
-    private projectService : ProjectService, 
+    private workspacesService : WorkspacesService,
     private statusService  : StatusService, 
+    private teamsService   : TeamsService, 
     private router         : Router
+
   ){
    
     //faz o vinculo com o formulario padrao
     this.activityForm = new FormGroup({
-      id         : new FormControl<string | null>(null),
-      activity   : new FormControl("",[Validators.required]),
-      id_category: new FormControl("",[Validators.required]),
-      id_client  : new FormControl("",[Validators.required]),
-      id_project : new FormControl("",[Validators.required]),
-      start_date : new FormControl("",[Validators.required]),
-      end_date   : new FormControl("",[Validators.required])
+      id           : new FormControl<string | null>(null),
+      activity     : new FormControl("",[Validators.required]),
+      id_category  : new FormControl("",[Validators.required]),
+      id_workspaces: new FormControl("",[Validators.required]),
+      id_team      : new FormControl("",[Validators.required]),
+      start_date   : new FormControl("",[Validators.required]),
+      end_date     : new FormControl("",[Validators.required])
     });
     
     
@@ -129,27 +141,70 @@ export class ActivityComponent implements OnInit {
   
   ngOnInit() {
 
-    this.initAutocompleteClient();
+    //this.initAutocompleteClient();
+    //this.initAutocompleteProject();
+    this.initAutocompleteTeams();
     this.initAutocompleteCategory();
-    this.initAutocompleteProject();
     this.initAutocompleteStatus();
+    this.initAutocompleteWorkspaces();
 
   }
 
-  initAutocompleteClient(){
+  // initAutocompleteClient(){
     
     
-    this.autoFnClient = new Autocomplete(this.activityForm,'name','id_client','id');
+  //   this.autoFnClient = new Autocomplete(this.activityForm,'name','id_client','id');
     
-    this.autoFnClient.loadData(this.clientService).subscribe((res: any) => {
+  //   this.autoFnClient.loadData(this.clientService).subscribe((res: any) => {
      
-      this.optionsClient = res ;
+  //     this.optionsClient = res ;
 
-      this.filteredOptionsClient = this.clientControl.valueChanges.pipe(
+  //     this.filteredOptionsClient = this.clientControl.valueChanges.pipe(
+  //       startWith(''),
+  //       map(value => {
+  //         const busca = typeof value === 'string' ?  value : "";
+  //         return busca ? this.autoFnClient.filter(busca,res) : this.optionsClient.slice();
+  //       }),
+  //     );
+
+  //   });
+
+  // }
+
+  initAutocompleteWorkspaces(){
+    
+    this.autoFnWorkspaces = new Autocomplete(this.activityForm,'name','id_workspaces','id');
+    
+    this.autoFnWorkspaces.loadData(this.workspacesService).subscribe((res: any) => {
+     
+      this.optionsWorkspaces = res ;
+
+      this.filteredOptionsWorkspaces = this.workspacesControl.valueChanges.pipe(
         startWith(''),
         map(value => {
           const busca = typeof value === 'string' ?  value : "";
-          return busca ? this.autoFnClient.filter(busca,res) : this.optionsClient.slice();
+          return busca ? this.autoFnWorkspaces.filter(busca,res) : this.optionsWorkspaces.slice();
+        }),
+      );
+
+    });
+
+  }
+
+   initAutocompleteTeams(){
+    
+    
+    this.autoFnTeams = new Autocomplete(this.activityForm,'title','id_team','id');
+    
+    this.autoFnTeams.loadData(this.teamsService).subscribe((res: any) => {
+     
+      this.optionsTeams = res ;
+
+      this.filteredOptionsTeams = this.teamsControl.valueChanges.pipe(
+        startWith(''),
+        map(value => {
+          const busca = typeof value === 'string' ?  value : "";
+          return busca ? this.autoFnTeams.filter(busca,res) : this.optionsTeams.slice();
         }),
       );
 
@@ -177,25 +232,25 @@ export class ActivityComponent implements OnInit {
 
   }
 
-  initAutocompleteProject(){
+  // initAutocompleteProject(){
    
-    this.autoFnProject = new Autocomplete(this.activityForm,'name','id_project','id');
+  //   this.autoFnProject = new Autocomplete(this.activityForm,'name','id_project','id');
     
-    this.autoFnProject.loadData(this.projectService).subscribe((res: any) => {
+  //   this.autoFnProject.loadData(this.projectService).subscribe((res: any) => {
      
-      this.optionsProject = res ;
+  //     this.optionsProject = res ;
 
-      this.filteredOptionsProject = this.projectControl.valueChanges.pipe(
-        startWith(''),
-        map(value => {
-          const busca = typeof value === 'string' ?  value : "";
-          return busca ? this.autoFnProject.filter(busca,this.optionsProject) : this.optionsProject.slice();
-        }),
-      );
+  //     this.filteredOptionsProject = this.projectControl.valueChanges.pipe(
+  //       startWith(''),
+  //       map(value => {
+  //         const busca = typeof value === 'string' ?  value : "";
+  //         return busca ? this.autoFnProject.filter(busca,this.optionsProject) : this.optionsProject.slice();
+  //       }),
+  //     );
 
-    });
+  //   });
 
-  }
+  // }
 
   initAutocompleteStatus(){
    
@@ -227,22 +282,30 @@ export class ActivityComponent implements OnInit {
     this.DefaultPageLayoutComponent.edit(id).subscribe({
 
       next: (res) => {
-        console.log(res);
+        //console.log(res);
         this.DefaultPageLayoutComponent.fillDate(res,'start_date',this.startHourControl,'T');
         this.DefaultPageLayoutComponent.fillDate(res,'end_date',this.endHourControl,'T');
 
-        this.clientService.get(res.client.id).subscribe({
-          next: (resCli) =>  {
-            this.clientControl.setValue(resCli);
-            this.autoFnClient.setValue(resCli);
-          },
-          error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
-        })
+        // this.clientService.get(res.client.id).subscribe({
+        //   next: (resCli) =>  {
+        //     this.clientControl.setValue(resCli);
+        //     this.autoFnClient.setValue(resCli);
+        //   },
+        //   error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
+        // })
 
         this.categoryService.get(res.category.id).subscribe({
           next: (resCat) =>  {
             this.categoryControl.setValue(resCat);
             this.autoFnCategory.setValue(resCat);
+          },
+          error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
+        })
+
+        this.teamsService.get(res.teams.id).subscribe({
+          next: (resTeams) =>  {
+            this.teamsControl.setValue(resTeams);
+            this.autoFnTeams.setValue(resTeams);
           },
           error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         })
@@ -255,13 +318,13 @@ export class ActivityComponent implements OnInit {
         //   error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         // })
 
-        this.projectService.get(res.project.id).subscribe({
-          next: (resProj) =>  {
-            this.projectControl.setValue(resProj);
-            this.autoFnProject.setValue(resProj);
-          },
-          error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
-        })
+        // this.projectService.get(res.project.id).subscribe({
+        //   next: (resProj) =>  {
+        //     this.projectControl.setValue(resProj);
+        //     this.autoFnProject.setValue(resProj);
+        //   },
+        //   error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
+        // })
 
 
       }

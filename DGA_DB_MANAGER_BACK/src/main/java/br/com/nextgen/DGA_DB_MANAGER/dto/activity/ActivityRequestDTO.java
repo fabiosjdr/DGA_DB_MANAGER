@@ -10,9 +10,9 @@ public record ActivityRequestDTO(
     @NotEmpty String activity, 
     @NotEmpty String start_date,
     @NotEmpty String end_date,
-    @NonNull  BigInteger id_client,
     @NonNull  BigInteger id_category,
-    @NonNull  BigInteger id_project,
+    @NonNull  BigInteger id_team,
+    @NonNull  BigInteger id_workspaces,
               BigInteger id_user,
               BigInteger id_account
 ){}

@@ -51,10 +51,12 @@ export class Autocomplete {
     }
 
     //usando a função arrow o vinculo com o this continua 
-    setValue = (value: { [key: string]: any }) => {
+    setValue = (value: { [key: string]: any }) => { 
         this.autocompleteForm.patchValue({ 
             [this.valueFieldTarget]: value[this.valueFieldSource] ? value[this.valueFieldSource] : "" 
         });
+
+        //console.log(this.autocompleteForm);
     }
 
     displayFn = (value: { [key: string]: any }): string => {
