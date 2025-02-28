@@ -99,12 +99,12 @@ export class ActivityComponent implements OnInit {
     //private clientService  : ClientService,
     //private projectService : ProjectService, 
     //private pageService    : DefaultPageService,
-    private toastService   : ToastrService,
-    private categoryService: CategoryService, 
+    private toastService      : ToastrService,
+    private categoryService   : CategoryService, 
     private workspacesService : WorkspacesService,
-    private statusService  : StatusService, 
-    private teamsService   : TeamsService, 
-    private router         : Router
+    private statusService     : StatusService, 
+    private teamsService      : TeamsService, 
+    private router            : Router
 
   ){
    
@@ -293,6 +293,15 @@ export class ActivityComponent implements OnInit {
         //   },
         //   error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
         // })
+
+        this.workspacesService.get(res.workspaces.id).subscribe({
+
+          next: (resCat) =>  {
+            this.workspacesControl.setValue(resCat);
+            this.autoFnWorkspaces.setValue(resCat);
+          },
+          error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
+        })
 
         this.categoryService.get(res.category.id).subscribe({
           next: (resCat) =>  {

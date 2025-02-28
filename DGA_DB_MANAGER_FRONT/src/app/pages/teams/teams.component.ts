@@ -85,6 +85,7 @@ export class TeamsComponent implements OnInit {
   }
 
   setList(list: []){ 
+    console.log(list);
     this.teamsList = list;
   }
 

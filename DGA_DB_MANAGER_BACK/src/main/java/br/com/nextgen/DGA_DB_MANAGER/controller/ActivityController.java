@@ -143,7 +143,6 @@ public class ActivityController{
         
         this.repository.save(newObj);
 
-
         this.createDetail(newObj);
 
         return ResponseEntity.ok(newObj);

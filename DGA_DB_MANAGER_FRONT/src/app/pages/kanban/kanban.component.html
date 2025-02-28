@@ -34,14 +34,17 @@
                         [columnColorEntireSurface]="columnColorEntireSurface" 
                         [allowColumnEdit]="allowColumnEdit" 
                         [allowColumnReorder]="allowColumnReorder" 
+                        [allowComment]="allowComment"
                         [taskActions]="taskActions" 
+                        [taskComments]="taskComments"
                         [dataSource]="dataSource" 
                         [taskDue]="taskDue"  
+                       
                         [taskProgress]="taskProgress" 
                         [columns]="columns"
                         [users]="users"
                         
-
+                        
                         (change)="onKanbanChange($event)"
                         (columnAdd)="onColumnAdd($event)"
                         (columnUpdate)="onColumnUpdate($event)"

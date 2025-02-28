@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -21,14 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity.Activity;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_detail.ActivityDetail;
+import br.com.nextgen.DGA_DB_MANAGER.domain.activity_detail_comments.ActivityDetailComments;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_detail_stage.ActivityDetailStage;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_stage.ActivityStage;
+import br.com.nextgen.DGA_DB_MANAGER.domain.client.Client;
 import br.com.nextgen.DGA_DB_MANAGER.domain.user.User;
 import br.com.nextgen.DGA_DB_MANAGER.dto.activity_detail.ActivityDetailRequestDTO;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity.ActivityRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_detail.ActivityDetailRepository;
+import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_detail_comments.ActivityDetailCommentsRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_detail_stage.ActivityDetailStageRespository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.activity_stage.ActivityStageRepository;
+import br.com.nextgen.DGA_DB_MANAGER.repositories.client.ClientRepository;
 import br.com.nextgen.DGA_DB_MANAGER.repositories.user.UserRepository;
 import br.com.nextgen.DGA_DB_MANAGER.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -39,13 +44,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor //lombok ja cria o construtor para n precisar colocar autowired em cada classe
 public class ActivityDetailController {
 
-    private final ActivityDetailRepository        repository;
-    private final ActivityRepository              activityRepository;
-    private final ActivityStageRepository         activityStageRepository;
-    private final ActivityDetailStageRespository  activityDetailStageRespository;
-
+    private final ActivityDetailRepository         repository;
+    private final ActivityRepository               activityRepository;
+    private final ActivityStageRepository          activityStageRepository;
+    private final ActivityDetailStageRespository   activityDetailStageRespository;
+    private final ActivityDetailCommentsRepository activityDetailCommentsRespository;
+                  
     private final UserRepository           userRepository;
+    private final ClientRepository         clientRepository;
     private final AuthService              authService;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @GetMapping("/{id_activity}")
     public ResponseEntity<List<ActivityDetail>>  get(@PathVariable BigInteger id_activity){
@@ -87,6 +96,8 @@ public class ActivityDetailController {
         return newDetailStage;
     }
 
+    
+
     @Transactional
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Validated ActivityDetailRequestDTO body){
@@ -104,17 +115,48 @@ public class ActivityDetailController {
         ActivityStage   stage    = activityStageRepository.findById(body.id_stage()).orElseThrow(() -> new RuntimeException("stage not found"));
 
         User            user     = null;
+        Client          client   = null;
+
         if(body.id_user() != null){
             user     = userRepository.findById(body.id_user()).orElseThrow(() -> new RuntimeException("stage not found"));
         }
+
+        if(body.id_client() != null){
+            client   = clientRepository.findById(body.id_client().toString()).orElseThrow(() -> new RuntimeException("stage not found"));
+        }
+
+        
 
         ActivityDetail  newObj = new ActivityDetail();
                         newObj.setActivity(activity);
                         newObj.setTitle(body.title());
                         newObj.setDescription(body.description());
+                        newObj.setPriority(body.priority());
                         
+                        
+                        if(body.start_date() != null){
+
+                            Instant instant = Instant.parse(body.start_date());
+                            LocalDateTime startDate = instant.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDateTime();
+                            newObj.setStart_date(startDate);
+                        }
+
+                        if(body.due_date() != null){
+
+                            Instant instant = Instant.parse(body.due_date());
+                            LocalDateTime dueDate = instant.atZone(ZoneId.of("America/Sao_Paulo")).toLocalDateTime();
+                            newObj.setDue_date(dueDate);
+
+                        }
+
+                        newObj.setProgress(body.progress());
+
                         if(user != null){
                             newObj.setUser(user);
+                        }
+
+                        if(client != null){
+                            newObj.setClient(client);
                         }
 
                         newObj.setStage(stage);
@@ -147,8 +189,14 @@ public class ActivityDetailController {
         ActivityStage   stage    = activityStageRepository.findById(body.id_stage()).orElseThrow(() -> new RuntimeException("stage not found"));
 
         User   user     = null;
+        Client client   = null;
+
         if(body.id_user() != null){
                user     = userRepository.findById(body.id_user()).orElseThrow(() -> new RuntimeException("stage not found"));
+        }
+        
+        if(body.id_client() != null){
+            client   = clientRepository.findById(body.id_client().toString()).orElseThrow(() -> new RuntimeException("stage not found"));
         }
         
         if(domain != null){
@@ -159,6 +207,10 @@ public class ActivityDetailController {
 
             if(user != null){
                 domain.setUser(user);
+            }
+
+            if(client != null){
+                domain.setClient(client);
             }
 
             domain.setStage(stage);
@@ -200,10 +252,14 @@ public class ActivityDetailController {
                 if(stage.getTimer()){
                     this.saveDetail(domain, stage);
                 }
-                    
                 
 
             }
+
+            if ( body.comments() != null  ){
+                this.saveComments(domain, body,user);
+            }
+           
 
             return ResponseEntity.ok(domain);
 
@@ -213,6 +269,46 @@ public class ActivityDetailController {
         }
         
 
+    }
+
+    private void saveComments(ActivityDetail domain, ActivityDetailRequestDTO body,User user){
+
+        body.comments().forEach(comment -> {
+
+            Object id = comment.id();
+
+            ActivityDetailComments comments = null;
+
+            if( id instanceof Integer || id instanceof Long || id instanceof java.math.BigInteger){
+
+                BigInteger bigId;
+
+                if(id instanceof BigInteger) {
+                    bigId = (BigInteger) id; // Já é um BigInteger, apenas faz o cast
+                } else {
+                    bigId = new BigInteger(id.toString()); // Converte Integer ou Long para String e depois para BigInteger
+                }
+                comments   = this.activityDetailCommentsRespository.findById(bigId).orElse(null);
+            }
+            
+            ActivityDetailComments  updateObj = new ActivityDetailComments();
+
+            if(comments != null){
+                updateObj.setId(comments.getId());
+            }
+
+            updateObj.setIdActivityDetail(domain.getId());
+            updateObj.setText(comment.text());
+
+            if(user != null){
+                updateObj.setIdUser(user.getId());
+            }
+            
+            updateObj.setTime(comment.time());
+        
+            this.activityDetailCommentsRespository.save(updateObj);
+            
+        });
     }
 
     @DeleteMapping("/{id}")

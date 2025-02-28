@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.apache.catalina.User;
 
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity.Activity;
+import br.com.nextgen.DGA_DB_MANAGER.domain.activity_detail_comments.ActivityDetailComments;
 import br.com.nextgen.DGA_DB_MANAGER.domain.activity_stage.ActivityStage;
 
 public record ActivityDetailResponseDTO(
@@ -20,7 +21,8 @@ public record ActivityDetailResponseDTO(
     LocalDateTime due_date,
     String        priority,
     String        color,
-    Integer       progress
+    Integer       progress,
+    ActivityDetailComments comments
 ) {
 
     public ActivityDetailResponseDTO() {
@@ -28,6 +30,7 @@ public record ActivityDetailResponseDTO(
             null,
             null, 
             null, 
+            null,
             null,
             null,
             null,

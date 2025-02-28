@@ -10,7 +10,6 @@ public class DgaDbManagerApplication {
 
 	public static void main(String[] args) {
 
-
 		Dotenv dotenv = Dotenv.configure().load();
      
         System.out.println(dotenv);
@@ -21,6 +20,7 @@ public class DgaDbManagerApplication {
         System.setProperty("DB_PASSWORD", dotenv.get("DB_PASSWORD"));
 		
 		SpringApplication.run(DgaDbManagerApplication.class, args);
+
 	}
 
 }

@@ -10,12 +10,14 @@ import { Stage } from '../../models/stage.interface';
 import { DetailsService } from '../../services/details.service';
 import { Detail } from '../../models/detail.interface';
 import { ToastrService } from 'ngx-toastr';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { UserService } from '../../services/user.service';
 import { Users } from '../../models/users.interface';
 import { KanbanColumnCustomHeaderComponent } from '../../components/kanban-column-custom-header/kanban-column-custom-header.component';
 import { ClientService } from '../../services/client.service';
 import { Client } from '../../types/client-response.type';
+import { Members, MembersResponse } from '../../models/members.interface';
+import { MembersService } from '../../services/members.service';
 
 @Component({
   selector: 'app-kanban',
@@ -30,10 +32,14 @@ import { Client } from '../../types/client-response.type';
   templateUrl: './kanban.component.html',
   styleUrls: ['./kanban.component.scss']
 })
+
+
 export class KanbanComponent implements AfterViewInit, OnInit{
 
-  @ViewChild('kanban', { static: false }) kanban: ElementRef | undefined;
   
+  @ViewChild('kanban', { static: false }) kanban: ElementRef | undefined;
+  @ViewChild('smartWindow', { static: false }) smartWindow!: any;
+
   id!: string;
  
   addNewColumn             = false;
@@ -49,27 +55,31 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   columnColorEntireSurface = true;
   allowColumnEdit          = true;
   allowColumnReorder       = true;
+  allowComment             = true;
   taskActions              = true;
   taskDue                  = true;
   taskComments             = true;
   currentUser              = 0;
   taskProgress             = true;
   
-  messages                 = ptBr
-
+  messages                 = ptBr;
+  
+  closeButtonHit           = false;
   
   columns   : { id: number; label : string; dataField: string,func:any}[] = [];
-  dataSource: { id: number; status: string; text : string}[] = [];
+  dataSource: { id: number; status: string; text : string,clientId:number|null,comment:[]}[] = [];
+
+  clientValue : {value:string} = {value:''};
+
+  
   users     : { id: number; name  : string}[] = [];
   clients   : { value: number; label  : string}[] = [];
-  
-  // users = [
-  //   { id: 0, name: 'Andrew', image: './../../../src/images/people/andrew.png' },
-  //   { id: 1, name: 'Anne', image: './../../../src/images/people/anne.png' },
-  //   { id: 2, name: 'Janet', image: './../../../src/images/people/janet.png' },
-  //   { id: 3, name: 'John', image: './../../../src/images/people/john.png' },
-  //   { id: 4, name: 'Laura', image: './../../../src/images/people/laura.png' }
-  // ];
+
+  mydialog! : any;
+  mytask!   : any;
+  myeditor  : any;
+  myvalidate: boolean = false;
+  mycomment : boolean = false;
 
   private clickListener!: () => void ;
 
@@ -77,13 +87,12 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   private clientLoaded   = false;
   private columnsLoaded  = false;
   private dataLoaded     = false;
-  private taskCanBeAdded = true;
-
 
   constructor(
     private route  : ActivatedRoute,
     private stage  : StagesService, 
     private user   : UserService, 
+    private members: MembersService,
     private client : ClientService, 
     private detailService : DetailsService, 
     private toastService: ToastrService,
@@ -114,7 +123,12 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   }
 
   ngAfterViewInit(): void {
+
+    
       this.init();
+
+    
+
   }
 
   ngAfterViewChecked() {
@@ -163,7 +177,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
       },
       complete: () => {
         this.clientLoaded = true;
-        console.log(this.clients)
+        //console.log(this.clients)
         //console.log('Operação finalizada.');
       },
     });
@@ -172,13 +186,14 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
   loadUser(): void{
 
-    this.user.getAll().subscribe({
+    this.members.setParams('id_team','1');
+    this.members.getAll().subscribe({
 
       next: (res) => {
         //console.log(res);
-        this.users = res.map((item: Users) => ({
-          id       : item.id,
-          name     : item.name
+        this.users = res.map((item: MembersResponse) => ({
+          id       : item.user.id,
+          name     : item.user.name
         }));
 
       },
@@ -187,8 +202,6 @@ export class KanbanComponent implements AfterViewInit, OnInit{
       },
       complete: () => {
         this.userLoaded = true;
-        //console.log(this.users)
-        //console.log('Operação finalizada.');
       },
     });
 
@@ -197,8 +210,9 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   loadColumns(): void {
 
     this.stage.get(this.id).subscribe({
-      next: (res) => {
 
+      next: (res) => {
+      
         this.columns = res.map((item: Stage) => ({
           id       : item.id,
           label    : item.name,
@@ -213,6 +227,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
       complete: () => {
         this.columnsLoaded = true;
       },
+      
     });
 
   }
@@ -222,8 +237,9 @@ export class KanbanComponent implements AfterViewInit, OnInit{
     this.dataLoaded = false;
     
     this.detailService.get(this.id).subscribe({
+      
       next: (res) => {
-        console.log(res);
+      
         this.dataSource = res.map((item: Detail) => ({
           id         : Number(item.id), 
           text       : item.title, 
@@ -233,9 +249,10 @@ export class KanbanComponent implements AfterViewInit, OnInit{
           color      : item.color,
           progress   : item.progress,
           userId     : item.user?.id,
+          clientId   : item.client?.id,
           startDate  : item.start_date,
           dueDate    : item.due_date,
-          client     : item.client?.id
+          comments   : []
         }));
 
       },
@@ -243,9 +260,14 @@ export class KanbanComponent implements AfterViewInit, OnInit{
         console.error('Erro ao tentar obter estágios:', err);
       },
       complete: () => {
+        
         this.dataLoaded = true;
+
       },
     });
+
+    
+
   
   }
 
@@ -310,28 +332,20 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
     return payload[0];
   }
-  
-  onClosing(event: any){
-   // this.kanban?.nativeElement.endEdit();
-   // event.preventDefault();
 
+  shouldClose(): Promise<boolean> {
+    
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(this.closeButtonHit); // Espera um tempo antes de verificar
+      }, 100); // Tempo para garantir a verificação
+    });
   }
 
   onTaskBeforeAdd = (event: any) => {
-
-    // event.preventDefault();
-
-    // this.taskCanBeAdded = true;
-
-    // const detail = event.detail;
     
-    // if(!detail.value.userId){
-    //   this.taskCanBeAdded = false;
-    //   alert('Por favor, atribua um usuário a tarefa!');
-    // }else{
-    //   this.kanban?.nativeElement.close();
-    // }
-
+    
+    
   }
 
   onTaskAdd(event: any){
@@ -344,6 +358,7 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
   onTaskUpdate(event:any) {
     const detail = event.detail;
+    
     this.saveTask(detail);
   }
 
@@ -360,31 +375,68 @@ export class KanbanComponent implements AfterViewInit, OnInit{
 
   }
 
-  saveTask(detail:any): void{
-    //console.log(detail);
-    const payload = this.prepareTasKData(detail);
-    
-    this.detailService.save(payload).subscribe({
-      next: (res) =>  {
+  onClosing(event: any){
+   
+    if(!this.myvalidate){
 
-        if (res && res.id) {
-          detail.value.id = res.id; 
-          console.log(detail);
-          console.log(this.dataSource);
-        }
-       
-        this.toastService.success("Dados salvos com sucesso!");
-         
-      },
-      error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
-    });
+      event.preventDefault();
+  
+      if(this.myeditor.text.value == ''){
+
+        setTimeout(() => {
+          if(this.myvalidate == false && this.mycomment == false){
+            alert('Por favor preencha o campo título!');
+          }
+        }, 300);
+        
+      }else{
+        this.myvalidate = true;
+        this.mydialog.close();
+      }
+    
+    }
+  }
+
+  saveTask(detail:any): void{
+    
+    detail.value.clientId = this.clientValue.value;
+  
+    console.log(detail.value);
+    return;
+    if(this.mycomment == false){
+
+      const payload = this.prepareTasKData(detail);
+  
+      // console.log(payload);
+      // return;
+  
+      this.detailService.save(payload).subscribe({
+        next: (res) =>  {
+  
+          if (res && res.id) {
+            detail.value.id = res.id; 
+          }
+        
+          this.toastService.success("Dados salvos com sucesso!");
+          this.loadKanbanData();
+  
+        },
+        error: () => this.toastService.error("Erro inesperado! Tente novamente mais tarde")
+      });
+    
+    }else{
+      this.mycomment = false;
+    }
+
+    
+    
   }
 
   prepareTasKData(detail:any){
    
     const value      = [detail.value];
     const filter     = detail.value.status;
-
+   
     const old_filter = (detail?.oldValue) ? detail.oldValue.status :  null
     const id         = detail.id;
 
@@ -399,27 +451,34 @@ export class KanbanComponent implements AfterViewInit, OnInit{
     const old_id_stage = (old_stage.length) ? old_stage[0].id : null;
 
     const payload  = value.map((item: any) => ({
-                      id         : (id != undefined) ? id : null,
-                      id_activity: this.id,
-                      title      : item.text,
-                      description: item.description,
-                      priority   : item.priority,
-                      color      : item.color,
-                      id_user    : item.userId,
-                      start_date : item.startDate,
-                      due_date   : item.dueDate,
-                      progress   : item.progress,
-                      id_stage   : stage[0].id,
-                      old_id_stage: old_id_stage
+                      id          : (id != undefined) ? id  : null,
+                      id_activity : this.id,
+                      title       : item.text,
+                      description : item.description,
+                      priority    : item.priority,
+                      color       : item.color,
+                      id_user     : item.userId,
+                      id_client   : item.clientId,
+                      start_date  : item.startDate,
+                      due_date    : item.dueDate,
+                      progress    : item.progress,
+                      id_stage    : stage[0].id,
+                      old_id_stage: old_id_stage,
+                      comments    : item.comments
                     })
                   );
-                  console.log(payload);
+                  //console.log(payload);
     return payload[0];
   }
 
   dialogRendered = (dialog: any, editors: any, labels: any, tabs: any, layout: any) => {
+    
+    this.mydialog = dialog;
+
     // hides the tabs in the kanban.
-    tabs['all'].style.display = 'none';
+    //console.log(tabs);
+    //tabs['all'].style.display = 'none';
+    //tabs['subtasks'].style.display = 'none';
 
     // the editors layout. By default it is in 2 columns and uses Grid layout. We set it to block in order to make it to occupy the full width.
     //layout.style.display = 'block';
@@ -427,9 +486,25 @@ export class KanbanComponent implements AfterViewInit, OnInit{
     // the following editors would be hidden.
     //console.log(dialog.editors)
     for (let key in dialog.editors) {
-      //console.log(key);
+        //console.log(key);
         switch (key) {
             
+            case 'text':
+              
+              // const smartInput = dialog.editors[key];
+              // const inputElement = smartInput.querySelector('input'); // O input interno
+
+              // if (inputElement) { 
+              //     inputElement.setAttribute('required', 'true');
+
+              //     // Adiciona validação ao digitar
+              //     inputElement.addEventListener('input', (event: any) => {
+              //         const value = event.target.value.trim();
+              //         event.target.setCustomValidity(value ? '' : 'Este campo é obrigatório!');
+              //     });
+              // }
+             
+            break;
             case 'progress':
                 //editors[key].style.display = 'none';
                 //labels[key].style.display = 'none';
@@ -459,53 +534,89 @@ export class KanbanComponent implements AfterViewInit, OnInit{
             }
         }
     }
+
+    document.querySelector('.smart-close-button')?.addEventListener('click', () => {
+      this.myvalidate = true;
+      this.mycomment  = true;
+      this.mydialog.close();
+    });
+
+    document.querySelector('.send')?.addEventListener('click', () => {
+      this.myvalidate = true;
+    });
+
+    document.querySelector('.cancel')?.addEventListener('click', () => {
+      this.myvalidate = true;
+      this.mydialog.close();
+    });
+
   };
 
-  dialogCustomizationFunction = (dialog: any, task: any, editors: any, labels: any) => {
+  dialogCustomizationFunction = (dialog: any, task: any, editors: any, labels: any,type:any) => {
+    
+    this.myvalidate = false;
+    this.mycomment  = false;
 
-    if (!editors.customField) {
-      
+    this.mytask     = task;
+    this.myeditor   = editors;
 
+    
+
+    if(type == 'edit'){ 
+      this.clientValue.value = task.data?.clientId ? task.data.clientId.toString() : "" ;
+    }else{
+      this.clientValue.value = '';
+    }
+    
+    if (!editors.clientId) { 
+     
         const multiComboInput = document.createElement('smart-multi-combo-input');
 
-        multiComboInput.setAttribute('data-field', 'customField');
-        multiComboInput.value = task.data['client'] ? task.data['client'] : '';
-
-        multiComboInput.setAttribute('allow-deselect', 'true'); // Exemplo de configuração adicional
+        multiComboInput.setAttribute('data-field', 'clientId');
+        multiComboInput.setAttribute('allow-deselect', 'true'); 
         multiComboInput.setAttribute('single-select', '');
 
-        // const options = [
-        //   { label: '', value: null },
-        //     { label: 'Opção 1', value: '1' },
-        //     { label: 'Opção 2', value: '2' },
-        //     { label: 'Opção 3', value: '3' }
-        // ];
-
-        // Atribuindo o dataSource ao multiComboInput
+        // Atribui a lista de clientes
         multiComboInput.dataSource = this.clients;
 
+        // Define valor inicial do campo
+        multiComboInput.value = this.clientValue.value ;
+
         const label = document.createElement('div');
-        label.setAttribute('class','editor-label')
+        label.setAttribute('class', 'editor-label');
         label.innerHTML = 'Cliente';
 
-        const secondColumn = dialog.content.querySelector('.column:not(.single-column)'); // Substitua pela sua classe ou seletor correto
-       
+        const secondColumn = dialog.content.querySelector('.column:not(.single-column)');
+
         if (secondColumn) {
-            // Adiciona o label e o input dentro da segunda coluna
             secondColumn.appendChild(label);
             secondColumn.appendChild(multiComboInput);
-    
-            editors.customField = multiComboInput;
-
+            editors.clientId = multiComboInput;
+            editors.clientId.value = this.clientValue.value;
         } else {
             console.error('Segunda coluna não encontrada no diálogo.');
         }
 
+        // Evento para atualizar a task ao alterar o valor
         
-    }else{
-        editors.customField.value = task.data['customField'] ? task.data['customField'] : '';
-        
+          multiComboInput.addEventListener('change', (event: any) => {
+          
+            const selectedValue     = event.detail.value;
+            editors.clientId.value  = selectedValue;
+            this.clientValue.value  = selectedValue;
+
+            if(task?.data){
+              task.data.clientId = selectedValue
+            }
+
+          });
+
+
+    } else { 
+        editors.clientId.value = this.clientValue.value;
     }
+
+    
   };
 
   headerHtml(data:any){
@@ -519,7 +630,6 @@ export class KanbanComponent implements AfterViewInit, OnInit{
     //span.classList.add('columnTimer');
     span.title = title;
     span.id = data.id;
-
 
     return span.outerHTML;  // Retorna o HTML como string
   }
@@ -556,7 +666,6 @@ export class KanbanComponent implements AfterViewInit, OnInit{
   onColumnReorder(event:any){
     this.kanban?.nativeElement.saveState();
   }
-
 
   onDragEnd = (event: any) => {
    

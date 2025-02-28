@@ -61,6 +61,7 @@ path="teams"
             <th scope="col">ID</th>
             <th scope="col">Title</th>
             <th scope="col">Descrição</th>
+            <th scope="col">Workspace</th>
             <th scope="col">Ações</th>
           </tr>
         </thead>
@@ -69,6 +70,7 @@ path="teams"
             <td>{{ list.id }}</td>
             <td>{{ list.title }}</td>
             <td>{{ list.description }}</td>
+            <td>{{ list.workspaces.name }}</td>
             <td>
                 <button  title="editar" (click)="edit(list.id)"   class="btn btn-outline-primary m-1"   >
                   <i class="bi bi-pencil-fill"></i>

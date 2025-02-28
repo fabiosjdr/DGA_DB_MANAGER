@@ -1,7 +1,9 @@
 package br.com.nextgen.DGA_DB_MANAGER.dto.activity_detail;
 
 import java.math.BigInteger;
+import java.util.List;
 
+import br.com.nextgen.DGA_DB_MANAGER.dto.activity_detail_comments.ActivityDetailCommentRequestDTO;
 import jakarta.validation.constraints.NotNull;
 
 public record ActivityDetailRequestDTO(
@@ -12,10 +14,12 @@ public record ActivityDetailRequestDTO(
               BigInteger    old_id_stage,
               String        title, 
               BigInteger    id_user,
+              BigInteger    id_client,
               String        description,
               String        priority,
               String        color,
               String        start_date,
               String        due_date,
-              Integer       progress
+              Integer       progress,
+              List<ActivityDetailCommentRequestDTO> comments 
 ){}

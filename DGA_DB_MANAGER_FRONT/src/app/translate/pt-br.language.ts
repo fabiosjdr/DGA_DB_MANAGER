@@ -82,7 +82,7 @@ export const ptBr = {
         'status': 'Status',
         'swimlane': 'Faixa de natação',
         'tags': 'Tags',
-        'text': 'Texto',
+        'text': 'Título',
         'userId': 'ID do usuário',
         'userIcon': 'Ícone do usuário',
         'detailsTab' : 'Detalhes',

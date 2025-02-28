@@ -37,5 +37,9 @@ public class Teams {
     @ManyToOne
     @JoinColumn(name = "id_workspaces") 
     private Workspaces workspaces;
+
+    // @OneToMany
+    // @JoinColumn(name = "id_team") 
+    // private List<Members> members;
   
 }

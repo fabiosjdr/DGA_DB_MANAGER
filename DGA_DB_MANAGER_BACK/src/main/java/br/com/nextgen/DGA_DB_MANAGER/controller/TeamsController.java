@@ -54,7 +54,7 @@ public class TeamsController {
         }
 
         Page<TeamsResponseDTO> response = teams.map(team -> 
-            new TeamsResponseDTO(team.getId(),team.getTitle(),team.getDescription(),team.getAccount())
+            new TeamsResponseDTO(team.getId(),team.getTitle(),team.getDescription(),team.getAccount(),team.getWorkspaces())
         );
     
         return ResponseEntity.ok(response);

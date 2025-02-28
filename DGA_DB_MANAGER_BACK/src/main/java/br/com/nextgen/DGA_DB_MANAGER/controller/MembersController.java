@@ -83,14 +83,17 @@ public class MembersController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Members>>  getByID(@RequestBody @Validated MembersRequestDTO body){
+    public ResponseEntity<List<Members>>  get(@RequestParam String id_team){
 
+        // var all = this.repository.findAll();
+        // return ResponseEntity.ok(all);
+        System.out.println(id_team);
         List<Members> domain ;
 
-        if (body.id() == null) {
-            domain = this.repository.findByTeamsId(body.id_team()).orElse(null);
+        if (id_team != null) {
+            domain = this.repository.findByTeamsId(new BigInteger(id_team)).orElse(null);
         }else{
-            domain = this.repository.findByTeamsIdAndId(body.id_team(),body.id()).orElse(null);
+            return ResponseEntity.notFound().build();
         }
         
         if (domain == null) {
